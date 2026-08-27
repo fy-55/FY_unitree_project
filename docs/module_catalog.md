@@ -4,7 +4,7 @@
 
 - **主链**：正常导航流程会使用。
 - **支撑**：模型、仿真、消息或统一启动，不直接生成导航控制量。
-- **研究**：控制器或实验分支，可构建但不作为首次真机默认项。
+- **研究**：控制器或实验分支，用于算法研究和离线分析。
 - **测试/旧链**：用于单节点验证或早期方案，不属于当前 Nav2 主链。
 
 ## G1 功能包
@@ -17,7 +17,6 @@
 - 输入：`/lf/lowstate`、`/odommodestate`、`/utlidar/cloud_livox_mid360`。
 - 输出：`/joint_states`、`/odom`、`/scan` 和机器人/里程计 TF。
 - 边界：只建立 SLAM 前的数据链，不启动 Nav2 运动桥，不发送 API 7105。
-- 扩展点：启动参数允许替换上游话题、base frame、速度坐标系和时间戳策略。
 
 ### `g1_nav_description` — 机器人模型与内部 TF
 
@@ -27,7 +26,6 @@
 - 输入：`/joint_states`。
 - 输出：`robot_description`、`/tf`、`/tf_static`。
 - 边界：描述机器人几何与关节树，不控制关节或步态。
-- 扩展点：增加传感器外参、导航碰撞几何或不同 G1 构型时，应在此包保持 TF 单一来源。
 
 ### `g1_nav_state` — Unitree 低层状态适配
 
@@ -45,7 +43,6 @@
 - `fake_odom_publisher`：生成受控假里程计，只用于离线 TF 测试。
 - 入口：`launch/offline_odom_tf_test.launch.py` 可独立验证 TF，不需要连接机器人。
 - 边界：提供局部运动估计，不等于全局真值；`map -> odom` 由 SLAM Toolbox 负责。
-- 扩展点：VIO、外部定位或融合里程计只需继续输出标准 `nav_msgs/Odometry`，并避免重复发布同一 TF。
 
 ### `g1_nav_sensors` — Mid360 点云到 Nav2 激光扫描
 
@@ -55,7 +52,6 @@
 - 数据链：`/utlidar/cloud_livox_mid360` → `/g1/cloud_synced` → `/scan_raw` → `/scan`。
 - 作用：修正/监控点云时间戳、转换坐标系、按高度切片为 360° LaserScan，再去除散斑。
 - 边界：只做感知预处理，不做 SLAM、costmap 或运动决策。
-- 扩展点：替换雷达时优先保持最终 `/scan` 和 frame 契约不变。
 
 ### `g1_nav_slam` — 建图、序列化地图与定位
 
@@ -65,8 +61,7 @@
 - `save_map.sh`：同时保存占据栅格和 SLAM Toolbox 序列化状态。
 - 输入：`/scan`、`/odom` 和 TF。
 - 输出：`/map`、`map -> odom`，以及 `.pgm/.yaml/.posegraph/.data` 地图文件。
-- 边界：定位模式下它是唯一 `map -> odom` 发布者；真实场地图不提交公开仓库。
-- 扩展点：可替换为 AMCL/其他定位器，但不能同时保留两个 `map -> odom` 发布者。
+- 边界：定位模式下它是唯一 `map -> odom` 发布者；真实场地图属于运行环境数据。
 
 ### `g1_nav_nav2` — 任务规划、局部控制和碰撞监控
 
@@ -78,7 +73,6 @@
 - 速度链：Controller Server `/cmd_vel_nav` → Velocity Smoother `/cmd_vel` → Collision Monitor `/cmd_vel_safe`。
 - 辅助节点：`static_footprint_publisher` 为 Collision Monitor 提供固定安全足迹。
 - 边界：启动 Nav2 后仍停在 `/cmd_vel_safe`，不会自动连接 G1 API。
-- 扩展点：通过 YAML 替换 planner/controller/BT/costmap layer，无需修改上游传感器接口。
 
 ### `g1_nav_control` — Nav2 到 G1 高层运动 API 的最终安全门
 
@@ -88,7 +82,6 @@
 - 输出：限幅后诊断话题 `/cmd_vel_g1`；仅在 `enable_motion=true` 时发布 `/api/sport/request` API 7105。
 - 安全机制：只允许前向和偏航、NaN/Inf 拒绝、命令/扫描超时置零、速度限幅、短有效期和停机置零。
 - 边界：调用 G1 已有高层运动服务，不实现双足步态或关节力矩控制。
-- 扩展点：最终执行限幅、状态联锁、实体急停输入和刹停模型应放在这一层。
 
 ### `g1_nav_sim` — G1 导航集成仿真
 
@@ -98,7 +91,6 @@
 - 输出契约：与真机相同的 `/odom`、TF、点云和 `/scan`，消费 `/cmd_vel_safe`。
 - 作用：验证 SLAM、Nav2、控制话题和 TF 是否闭环。
 - 边界：平面代理不模拟 G1 双足动力学、打滑、平衡或真实刹停距离。
-- 扩展点：增加场景、障碍、传感器噪声或 bag 回放回归。
 
 ### `nav2_custom_plugins` — 第一代 MPC/MPPI 插件集合
 
@@ -111,7 +103,6 @@
 - 工具：`test_plugin` 检查 pluginlib 装载；`costmap_reader_tool` 读取/可视化 costmap。
 - 装载链：YAML 类名 → `plugins.xml` → 共享库 → `PLUGINLIB_EXPORT_CLASS`。
 - 边界：`AdaptiveProgressChecker` 仅保留源码，当前未进入构建/注册，不能作为可用插件宣传。
-- 扩展点：新增 critic、动力学模型、采样策略、统计日志或恢复行为。
 
 ### `nav2_custom_plugins_v2` — 模块化 GPU-MPPI 研究分支
 
@@ -129,7 +120,6 @@
 - `unitree_api`：API request/response 消息，G1 API 7105 与 B2 SportClient 都依赖它。
 - `unitree_go`：SportModeState 等 Go2/B2 高层状态消息。
 - `unitree_hg`：G1/H1 低层状态、关节和手部消息。
-- 提交理由：让 G1 workspace 在明确许可证下独立生成消息类型并完成构建。
 
 ## B2 功能包
 
@@ -163,7 +153,6 @@
 - 速度链：Controller Server `/cmd_vel_nav` → Velocity Smoother `/cmd_vel` → `b2_walk`。
 - 重要边界：参数文件虽然含 `collision_monitor` 段，但当前 launch 没有启动该节点，且 `FootprintApproach.enabled=false`；不能把它写成已生效的 B2 安全层。
 - 地图策略：公开仓库只保留地图使用说明，真实场地图由使用者在启动时提供。
-- 扩展点：更换 SLAM、planner、controller、costmap layer 或速度平滑器。
 
 ### `nav2_custom_plugins` — B2 CPU/GPU 控制器与恢复原型
 
@@ -176,7 +165,6 @@
 - 输出：`TwistStamped` 控制命令、候选/最优轨迹可视化和可选统计日志。
 - 当前配置事实：20 Hz、8000 candidates、horizon 5、`dt=0.1 s`；这些不是 B2 实测响应参数。
 - 边界：`AdaptiveProgressChecker` 源码保留但没有构建/注册。
-- 扩展点：动力学 rollout、critic、GPU kernel、控制约束、超时统计和模型失配补偿。
 
 ### `b2_navigation/src/unitree_ros2` — 官方外部依赖
 

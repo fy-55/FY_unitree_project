@@ -1,35 +1,30 @@
-# 单仓库与真机工作区协作流程
+# 项目组织说明
 
-## 为什么保留三个目录
+本作品集由三个相互独立的项目组成：
 
-- G1 真机工作区：继续承担 G1 构建、仿真和真机验证。
-- B2 真机工作区：继续承担 B2/CUDA 构建、实验和真机验证。
-- 本 portfolio：只组合经过确认的发布提交，用于 GitHub 展示。
+| 项目 | 内容 |
+|---|---|
+| G1 Navigation | 基于 ROS 2、SLAM Toolbox 和 Nav2 的 G1 导航系统 |
+| B2 Navigation | 基于 ROS 2、GPU-MPPI 和安全运动桥的 B2 导航系统 |
+| G1 Voice Interaction | 基于 ASR、LLM 和 TTS 的 G1 语音交互系统 |
 
-这样做不会改变原工作区路径、`build/`、`install/`、地图或设备配置，也避免两个项目的同名 ROS 包在一个 colcon overlay 中互相覆盖。
+## 项目边界
 
-## 后续更新顺序
+- G1 Navigation 和 B2 Navigation 是独立的 ROS 2 workspace。
+- G1 Voice Interaction 是独立的 C++ 语音应用项目，不依赖导航 workspace 的 ROS 包。
+- 三个项目分别拥有自己的依赖、参数、启动入口和运行环境。
+- 本仓库不包含真实场地图、rosbag、本机构建目录、设备配置或私有模型文件。
 
-1. 在对应真机工作区创建同目录备份。
-2. 修改源码并完成离线检查、构建、仿真或分阶段真机验证。
-3. 在对应真机工作区提交 Git。
-4. 在 portfolio 根目录拉入新的已验证提交：
+## 功能关系
 
-```bash
-git subtree pull --prefix=g1_navigation <path-to-g1-workspace> main --squash
-```
+导航项目关注机器人感知、定位、路径规划和运动控制；语音项目关注语音输入、自然语言理解、语音输出以及有限的机器人动作控制。语音项目可以作为独立的人机交互入口，不改变导航系统的内部模块边界。
 
-或：
+## 运行环境
 
-```bash
-git subtree pull --prefix=b2_navigation <path-to-b2-workspace> main --squash
-```
+| 项目 | 主要运行环境 |
+|---|---|
+| G1 Navigation | ROS 2、Gazebo、SLAM Toolbox、Nav2 |
+| B2 Navigation | ROS 2、CUDA、SLAM Toolbox、Nav2 |
+| G1 Voice Interaction | C++17、Unitree SDK2、libcurl、本地 Ollama、G1 ASR/TTS |
 
-5. 重新运行两个子项目的源码检查，然后推送 portfolio。
-
-## 约束
-
-- 不要在 portfolio 根目录执行 `colcon build`。
-- 不要同时 source G1 与 B2 的 `install/setup.bash`。
-- 真机专用地图、rosbag、网卡配置和 `.bak` 继续留在原工作区，不进入 portfolio。
-- 如果直接修改 portfolio 子目录，下一次 subtree 同步可能产生冲突；个人开发建议以原真机工作区为准。
+详细功能和运行入口分别见各项目 README 及对应复现说明。
