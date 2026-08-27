@@ -1,0 +1,28 @@
+name: source-checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  offline-checks:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install parser dependency
+        run: python3 -m pip install pyyaml
+
+      - name: Check G1 public source
+        working-directory: g1_navigation
+        run: ./scripts/check_source.sh
+
+      - name: Check B2 public source
+        working-directory: b2_navigation
+        run: ./scripts/check_source.sh
+
+      - name: Run B2 model-mismatch self-test
+        working-directory: b2_navigation
+        run: python3 experiments/mppi_model_mismatch/run_full_1d_experiment.py --self-test-only

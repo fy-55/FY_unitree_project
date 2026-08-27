@@ -1,0 +1,14 @@
+# Do not build both ROS workspaces from the monorepo root.
+/build/
+/install/
+/log/
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/
+.idea/
+*.swp
+*~
+*.bak
+.DS_Store
