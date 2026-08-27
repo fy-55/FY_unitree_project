@@ -1,0 +1,56 @@
+<!--
+  G1 multi-goal navigation tree with the same no-Spin/no-BackUp policy as the
+  single-goal tree. Global planning is refreshed every three seconds, matching
+  the conservative cadence of Nav2's Humble multi-goal default tree.
+-->
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RecoveryNode number_of_retries="2147483647" name="NavigateThroughPosesWithSafeReplanning">
+      <PipelineSequence name="NavigateWithReplanning">
+        <RateController hz="0.333">
+          <RecoveryNode number_of_retries="1" name="ComputePathThroughPoses">
+            <ReactiveSequence>
+              <RemovePassedGoals
+                input_goals="{goals}"
+                output_goals="{goals}"
+                radius="0.7"/>
+              <ComputePathThroughPoses
+                goals="{goals}"
+                path="{path}"
+                planner_id="GridBased"/>
+            </ReactiveSequence>
+            <Sequence name="ClearGlobalAndWait">
+              <ClearEntireCostmap
+                name="ClearGlobalCostmap-Context"
+                service_name="global_costmap/clear_entirely_global_costmap"/>
+              <Wait wait_duration="1"/>
+            </Sequence>
+          </RecoveryNode>
+        </RateController>
+
+        <RecoveryNode number_of_retries="1" name="FollowPath">
+          <FollowPath path="{path}" controller_id="FollowPath"/>
+          <Sequence name="ClearLocalAndWait">
+            <ClearEntireCostmap
+              name="ClearLocalCostmap-Context"
+              service_name="local_costmap/clear_entirely_local_costmap"/>
+            <Wait wait_duration="1"/>
+          </Sequence>
+        </RecoveryNode>
+      </PipelineSequence>
+
+      <ReactiveFallback name="SafeRecoveryFallback">
+        <GoalUpdated/>
+        <Sequence name="ClearBothWaitAndReplan">
+          <ClearEntireCostmap
+            name="ClearLocalCostmap-Recovery"
+            service_name="local_costmap/clear_entirely_local_costmap"/>
+          <ClearEntireCostmap
+            name="ClearGlobalCostmap-Recovery"
+            service_name="global_costmap/clear_entirely_global_costmap"/>
+          <Wait wait_duration="1"/>
+        </Sequence>
+      </ReactiveFallback>
+    </RecoveryNode>
+  </BehaviorTree>
+</root>

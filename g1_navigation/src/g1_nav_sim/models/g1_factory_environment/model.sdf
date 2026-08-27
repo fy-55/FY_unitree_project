@@ -1,0 +1,351 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="g1_factory_environment">
+    <static>true</static>
+
+    <!--
+      Navigation-oriented indoor factory layout, approximately 24 m x 22 m.
+
+      Design rules:
+      - no overhead beams, pipes or ducts;
+      - a 7.4 m wide central aisle;
+      - door openings are at least 2.2 m wide;
+      - walls, high worktables, chair-like obstacles and aisle columns;
+      - the layout is deliberately asymmetric to help scan matching.
+
+      Every object has collision geometry and intersects the current
+      PointCloud2-to-LaserScan height window.
+    -->
+    <link name="factory_structure">
+
+      <!-- Outer enclosure: x=[-12, 12], y=[-11, 11]. -->
+      <collision name="south_outer_wall_collision">
+        <pose>0 -10.9 1.3 0 0 0</pose>
+        <geometry><box><size>24.0 0.20 2.60</size></box></geometry>
+      </collision>
+      <visual name="south_outer_wall_visual">
+        <pose>0 -10.9 1.3 0 0 0</pose>
+        <geometry><box><size>24.0 0.20 2.60</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+      </visual>
+
+      <collision name="north_outer_wall_collision">
+        <pose>0 10.9 1.3 0 0 0</pose>
+        <geometry><box><size>24.0 0.20 2.60</size></box></geometry>
+      </collision>
+      <visual name="north_outer_wall_visual">
+        <pose>0 10.9 1.3 0 0 0</pose>
+        <geometry><box><size>24.0 0.20 2.60</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+      </visual>
+
+      <collision name="west_outer_wall_collision">
+        <pose>-11.9 0 1.3 0 0 0</pose>
+        <geometry><box><size>0.20 21.8 2.60</size></box></geometry>
+      </collision>
+      <visual name="west_outer_wall_visual">
+        <pose>-11.9 0 1.3 0 0 0</pose>
+        <geometry><box><size>0.20 21.8 2.60</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+      </visual>
+
+      <collision name="east_outer_wall_collision">
+        <pose>11.9 0 1.3 0 0 0</pose>
+        <geometry><box><size>0.20 21.8 2.60</size></box></geometry>
+      </collision>
+      <visual name="east_outer_wall_visual">
+        <pose>11.9 0 1.3 0 0 0</pose>
+        <geometry><box><size>0.20 21.8 2.60</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+      </visual>
+
+      <!--
+        North and south partitions.  Moving them from y=+/-2.7 m to
+        y=+/-3.7 m expands the main aisle from 5.4 m to 7.4 m.
+        Each partition has two 2.6 m openings.
+      -->
+      <collision name="north_partition_west_collision">
+        <pose>-9.05 3.7 1.2 0 0 0</pose>
+        <geometry><box><size>5.5 0.16 2.4</size></box></geometry>
+      </collision>
+      <visual name="north_partition_west_visual">
+        <pose>-9.05 3.7 1.2 0 0 0</pose>
+        <geometry><box><size>5.5 0.16 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <collision name="north_partition_center_collision">
+        <pose>0 3.7 1.2 0 0 0</pose>
+        <geometry><box><size>7.4 0.16 2.4</size></box></geometry>
+      </collision>
+      <visual name="north_partition_center_visual">
+        <pose>0 3.7 1.2 0 0 0</pose>
+        <geometry><box><size>7.4 0.16 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <collision name="north_partition_east_collision">
+        <pose>9.05 3.7 1.2 0 0 0</pose>
+        <geometry><box><size>5.5 0.16 2.4</size></box></geometry>
+      </collision>
+      <visual name="north_partition_east_visual">
+        <pose>9.05 3.7 1.2 0 0 0</pose>
+        <geometry><box><size>5.5 0.16 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <collision name="south_partition_west_collision">
+        <pose>-9.60 -3.7 1.2 0 0 0</pose>
+        <geometry><box><size>4.4 0.16 2.4</size></box></geometry>
+      </collision>
+      <visual name="south_partition_west_visual">
+        <pose>-9.60 -3.7 1.2 0 0 0</pose>
+        <geometry><box><size>4.4 0.16 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <collision name="south_partition_center_collision">
+        <pose>0 -3.7 1.2 0 0 0</pose>
+        <geometry><box><size>9.6 0.16 2.4</size></box></geometry>
+      </collision>
+      <visual name="south_partition_center_visual">
+        <pose>0 -3.7 1.2 0 0 0</pose>
+        <geometry><box><size>9.6 0.16 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <collision name="south_partition_east_collision">
+        <pose>9.60 -3.7 1.2 0 0 0</pose>
+        <geometry><box><size>4.4 0.16 2.4</size></box></geometry>
+      </collision>
+      <visual name="south_partition_east_visual">
+        <pose>9.60 -3.7 1.2 0 0 0</pose>
+        <geometry><box><size>4.4 0.16 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <!-- Short asymmetric divider walls; all passages remain >= 2.2 m. -->
+      <collision name="northwest_divider_collision">
+        <pose>-4.8 7.4 1.2 0 0 0</pose>
+        <geometry><box><size>0.16 2.8 2.4</size></box></geometry>
+      </collision>
+      <visual name="northwest_divider_visual">
+        <pose>-4.8 7.4 1.2 0 0 0</pose>
+        <geometry><box><size>0.16 2.8 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <collision name="northeast_divider_collision">
+        <pose>4.8 4.8 1.2 0 0 0</pose>
+        <geometry><box><size>0.16 2.2 2.4</size></box></geometry>
+      </collision>
+      <visual name="northeast_divider_visual">
+        <pose>4.8 4.8 1.2 0 0 0</pose>
+        <geometry><box><size>0.16 2.2 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <collision name="southwest_divider_collision">
+        <pose>-4.8 -4.9 1.2 0 0 0</pose>
+        <geometry><box><size>0.16 2.4 2.4</size></box></geometry>
+      </collision>
+      <visual name="southwest_divider_visual">
+        <pose>-4.8 -4.9 1.2 0 0 0</pose>
+        <geometry><box><size>0.16 2.4 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <collision name="southeast_divider_collision">
+        <pose>4.8 -7.35 1.2 0 0 0</pose>
+        <geometry><box><size>0.16 2.9 2.4</size></box></geometry>
+      </collision>
+      <visual name="southeast_divider_visual">
+        <pose>4.8 -7.35 1.2 0 0 0</pose>
+        <geometry><box><size>0.16 2.9 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+      </visual>
+
+      <!--
+        High worktables (1.0-1.15 m).  In the y direction the nominal clear
+        spacing is about 1.8 m: outer wall -> table -> chair -> partition.
+      -->
+      <collision name="table_northwest_collision">
+        <pose>-8.8 8.5 0.55 0 0 0</pose>
+        <geometry><box><size>2.6 0.8 1.10</size></box></geometry>
+      </collision>
+      <visual name="table_northwest_visual">
+        <pose>-8.8 8.5 0.55 0 0 0</pose>
+        <geometry><box><size>2.6 0.8 1.10</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script></material>
+      </visual>
+
+      <collision name="table_northcenter_collision">
+        <pose>-1.8 8.5 0.525 0 0 0</pose>
+        <geometry><box><size>2.8 0.8 1.05</size></box></geometry>
+      </collision>
+      <visual name="table_northcenter_visual">
+        <pose>-1.8 8.5 0.525 0 0 0</pose>
+        <geometry><box><size>2.8 0.8 1.05</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Orange</name></script></material>
+      </visual>
+
+      <collision name="table_northeast_collision">
+        <pose>8.5 8.5 0.575 0 0 0</pose>
+        <geometry><box><size>3.0 0.8 1.15</size></box></geometry>
+      </collision>
+      <visual name="table_northeast_visual">
+        <pose>8.5 8.5 0.575 0 0 0</pose>
+        <geometry><box><size>3.0 0.8 1.15</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script></material>
+      </visual>
+
+      <collision name="table_southwest_collision">
+        <pose>-8.9 -8.5 0.55 0 0 0</pose>
+        <geometry><box><size>2.7 0.8 1.10</size></box></geometry>
+      </collision>
+      <visual name="table_southwest_visual">
+        <pose>-8.9 -8.5 0.55 0 0 0</pose>
+        <geometry><box><size>2.7 0.8 1.10</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Orange</name></script></material>
+      </visual>
+
+      <collision name="table_southcenter_collision">
+        <pose>-1.8 -8.5 0.525 0 0 0</pose>
+        <geometry><box><size>2.5 0.8 1.05</size></box></geometry>
+      </collision>
+      <visual name="table_southcenter_visual">
+        <pose>-1.8 -8.5 0.525 0 0 0</pose>
+        <geometry><box><size>2.5 0.8 1.05</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script></material>
+      </visual>
+
+      <collision name="table_southeast_collision">
+        <pose>8.6 -8.5 0.575 0 0 0</pose>
+        <geometry><box><size>2.9 0.8 1.15</size></box></geometry>
+      </collision>
+      <visual name="table_southeast_visual">
+        <pose>8.6 -8.5 0.575 0 0 0</pose>
+        <geometry><box><size>2.9 0.8 1.15</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Orange</name></script></material>
+      </visual>
+
+      <!-- Chair-like obstacles, 1.0 m high so the navigation scan sees them. -->
+      <collision name="chair_northwest_collision">
+        <pose>-8.4 5.9 0.50 0 0 0.10</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+      </collision>
+      <visual name="chair_northwest_visual">
+        <pose>-8.4 5.9 0.50 0 0 0.10</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Blue</name></script></material>
+      </visual>
+
+      <collision name="chair_northcenter_collision">
+        <pose>-1.1 5.90 0.50 0 0 -0.12</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+      </collision>
+      <visual name="chair_northcenter_visual">
+        <pose>-1.1 5.90 0.50 0 0 -0.12</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Blue</name></script></material>
+      </visual>
+
+      <collision name="chair_northeast_collision">
+        <pose>9.1 5.9 0.50 0 0 0.18</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+      </collision>
+      <visual name="chair_northeast_visual">
+        <pose>9.1 5.9 0.50 0 0 0.18</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Blue</name></script></material>
+      </visual>
+
+      <collision name="chair_southwest_collision">
+        <pose>-8.2 -5.9 0.50 0 0 -0.14</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+      </collision>
+      <visual name="chair_southwest_visual">
+        <pose>-8.2 -5.9 0.50 0 0 -0.14</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Blue</name></script></material>
+      </visual>
+
+      <collision name="chair_southcenter_collision">
+        <pose>-1.2 -5.90 0.50 0 0 0.16</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+      </collision>
+      <visual name="chair_southcenter_visual">
+        <pose>-1.2 -5.90 0.50 0 0 0.16</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Blue</name></script></material>
+      </visual>
+
+      <collision name="chair_southeast_collision">
+        <pose>9.0 -5.9 0.50 0 0 -0.20</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+      </collision>
+      <visual name="chair_southeast_visual">
+        <pose>9.0 -5.9 0.50 0 0 -0.20</pose>
+        <geometry><box><size>0.62 0.62 1.0</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Blue</name></script></material>
+      </visual>
+
+      <!--
+        Five staggered columns add useful scan features to the long central
+        aisle without turning it into a narrow slalom.  Adjacent columns have
+        more than 3 m of horizontal clearance, and each remains more than
+        1.8 m from the north/south partition walls.
+      -->
+      <collision name="aisle_column_west_collision">
+        <pose>-9.0 1.35 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+      </collision>
+      <visual name="aisle_column_west_visual">
+        <pose>-9.0 1.35 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script></material>
+      </visual>
+
+      <collision name="aisle_column_midwest_collision">
+        <pose>-4.5 -1.35 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+      </collision>
+      <visual name="aisle_column_midwest_visual">
+        <pose>-4.5 -1.35 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script></material>
+      </visual>
+
+      <collision name="aisle_column_center_collision">
+        <pose>1.2 1.45 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+      </collision>
+      <visual name="aisle_column_center_visual">
+        <pose>1.2 1.45 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script></material>
+      </visual>
+
+      <collision name="aisle_column_mideast_collision">
+        <pose>5.2 -1.30 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+      </collision>
+      <visual name="aisle_column_mideast_visual">
+        <pose>5.2 -1.30 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script></material>
+      </visual>
+
+      <collision name="aisle_column_east_collision">
+        <pose>9.2 1.20 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+      </collision>
+      <visual name="aisle_column_east_visual">
+        <pose>9.2 1.20 1.2 0 0 0</pose>
+        <geometry><box><size>0.65 0.65 2.4</size></box></geometry>
+        <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script></material>
+      </visual>
+
+    </link>
+  </model>
+</sdf>

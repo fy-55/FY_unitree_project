@@ -1,0 +1,87 @@
+<!--
+  G1 MPPI-specific single-goal navigation tree.
+
+  Why this tree is separate from the RPP tree:
+    - The RPP tree recomputes the global path at 2 Hz.
+    - Every new Path calls the custom MPPI controller's setPlan().
+    - This MPPI version resets its warm-start sequence in setPlan(), so periodic
+      replanning prevents the controller from retaining its previous solution.
+
+  MPPI adaptation made here:
+    - Tick the path check at 2 Hz, but KEEP the current path while it is valid.
+    - Recompute only when the goal changes or IsPathValid reports false.
+    - If FollowPath repeatedly fails, clear both costmaps and FORCE one new
+      global plan before retrying from the robot's current pose.
+
+  Safety policy retained from the G1 RPP tree:
+    - No Spin, BackUp, or DriveOnHeading recovery behavior.
+    - Clear stale costmaps and wait before retrying.
+    - The navigation action remains retryable until it succeeds, is canceled,
+      or exhausts the bounded outer retry count.
+-->
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <!-- Three bounded recovery rounds are enough for real-robot replanning;
+         persistent failure must return control to the operator instead of
+         repeatedly commanding a humanoid for several minutes. -->
+    <RecoveryNode number_of_retries="3" name="NavigateWithMppiSafeReplanning">
+      <PipelineSequence name="NavigateWithMppiConditionalReplanning">
+        <!--
+          MPPI CHANGE: RateController still checks at 2 Hz, but the Fallback
+          returns SUCCESS without publishing a new Path whenever the existing
+          path is valid and the goal has not changed.
+        -->
+        <RateController hz="2.0" name="CheckMppiPathAtTwoHz">
+          <RecoveryNode number_of_retries="1" name="ComputePathToPoseWhenNeeded">
+            <Fallback name="KeepValidPathOrComputeNewPath">
+              <ReactiveSequence name="ExistingMppiPathStillUsable">
+                <Inverter>
+                  <GlobalUpdatedGoal/>
+                </Inverter>
+                <IsPathValid path="{path}"/>
+              </ReactiveSequence>
+              <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+            </Fallback>
+            <Sequence name="ClearGlobalWaitAndRetryPlanning">
+              <ClearEntireCostmap
+                name="ClearGlobalCostmap-MppiPlanningContext"
+                service_name="global_costmap/clear_entirely_global_costmap"/>
+              <Wait wait_duration="1"/>
+            </Sequence>
+          </RecoveryNode>
+        </RateController>
+
+        <RecoveryNode number_of_retries="1" name="FollowPathWithMppi">
+          <FollowPath path="{path}" controller_id="FollowPath"/>
+          <Sequence name="ClearLocalWaitAndRetryMppi">
+            <ClearEntireCostmap
+              name="ClearLocalCostmap-MppiControlContext"
+              service_name="local_costmap/clear_entirely_local_costmap"/>
+            <Wait wait_duration="1"/>
+          </Sequence>
+        </RecoveryNode>
+      </PipelineSequence>
+
+      <ReactiveFallback name="MppiSafeRecoveryFallback">
+        <GoalUpdated/>
+        <Sequence name="ClearBothForceNewPlanAndRetryMppi">
+          <ClearEntireCostmap
+            name="ClearLocalCostmap-MppiRecovery"
+            service_name="local_costmap/clear_entirely_local_costmap"/>
+          <ClearEntireCostmap
+            name="ClearGlobalCostmap-MppiRecovery"
+            service_name="global_costmap/clear_entirely_global_costmap"/>
+          <Wait wait_duration="1"/>
+          <!--
+            MPPI CHANGE: force a fresh Path after repeated controller failure;
+            otherwise IsPathValid could keep the old but untrackable path.
+          -->
+          <ComputePathToPose
+            goal="{goal}"
+            path="{path}"
+            planner_id="GridBased"/>
+        </Sequence>
+      </ReactiveFallback>
+    </RecoveryNode>
+  </BehaviorTree>
+</root>
