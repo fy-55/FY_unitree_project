@@ -1,5 +1,7 @@
 # Unitree G1 & B2 ROS 2 Navigation Portfolio
 
+[系统架构图](docs/system_architecture.md) · [完整功能包目录](docs/module_catalog.md) · [源码变更审计](docs/source_change_audit.md) · [开发与同步](docs/development_workflow.md)
+
 一个仓库展示两套相互独立的 Unitree 导航工程：G1 侧重完整 ROS 2/Nav2 仿真、定位和安全速度桥；B2 侧重 CUDA GPU-MPPI 控制器、全流程导航与模型失配实验。
 
 > 这是个人研究与工程作品集，不是 Unitree 官方产品。两个子目录是独立的 ROS 2 workspace，不能在仓库根目录混合执行 `colcon build`。
@@ -10,6 +12,19 @@
 |---|---|---|---|
 | [G1 Navigation](g1_navigation/README.md) | 状态/点云/里程计 → SLAM Toolbox → Nav2 → Collision Monitor → API 7105 | RPP 默认基线，CPU/GPU-MPPI 可选研究分支 | 13 包构建；110 项测试无失败；提供 Gazebo 复现 |
 | [B2 Navigation](b2_navigation/README.md) | SportModeState/雷达 → Nav2 → GPU-MPPI → smoother → 安全运动桥 | CUDA GPU-MPPI、MPC、恢复与模型失配实验 | 5 包构建；15 项测试无失败；离线实验自检通过 |
+
+```mermaid
+flowchart LR
+  G1RAW[G1 LowState / SportModeState / Mid360] --> G1ADAPT[G1 ROS 2 adapters]
+  G1ADAPT --> G1NAV[SLAM Toolbox + Nav2]
+  G1NAV --> G1CTRL[RPP or GPU-MPPI]
+  G1CTRL --> G1SAFE[Collision Monitor + API 7105 gate]
+
+  B2RAW[B2 SportModeState / RoboSense] --> B2ADAPT[B2 driver adapters]
+  B2ADAPT --> B2NAV[SLAM Toolbox + Nav2]
+  B2NAV --> B2CTRL[CUDA GPU-MPPI]
+  B2CTRL --> B2SAFE[Velocity smoother + b2_walk gate]
+```
 
 ## 我完成的工程范围
 
@@ -62,7 +77,7 @@ python3 experiments/mppi_model_mismatch/run_full_1d_experiment.py --self-test-on
 
 ## 真机开发说明
 
-这个仓库是发布快照，不会替代现有的 G1/B2 真机工作区。继续开发时先在各自工作区修改、构建和真机验证，再将已确认的提交同步到本仓库。具体流程见 [docs/development_workflow.md](docs/development_workflow.md)。
+这个仓库是发布快照，不会替代现有的 G1/B2 真机工作区。继续开发时先在各自工作区修改、构建和真机验证，再将已确认的提交同步到本仓库。具体流程见 [开发与同步说明](docs/development_workflow.md)；本次包装对源码和真机默认行为的准确影响见 [源码变更审计](docs/source_change_audit.md)。
 
 ## 安全与证据边界
 
