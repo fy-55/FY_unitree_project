@@ -73,4 +73,4 @@ python3 experiments/mppi_model_mismatch/run_full_1d_experiment.py --self-test-on
 
 ## 许可证
 
-两个子项目的本人原创部分均采用 Apache-2.0；机器人模型、Unitree 消息、SDK 示例及其他第三方组件保留各自许可证。详见各子项目的 `LICENSE` 与 `THIRD_PARTY_NOTICES.md`。
+两个子项目的本人原创部分均采用 [Apache-2.0](LICENSE)；机器人模型、Unitree 消息、SDK 示例及其他第三方组件保留各自许可证，详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 和各子项目说明。
