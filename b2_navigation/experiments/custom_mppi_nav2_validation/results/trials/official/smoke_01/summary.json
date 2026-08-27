@@ -1,0 +1,31 @@
+{
+  "variant": "official",
+  "trial": "smoke_01",
+  "goal": {
+    "x": 1.5,
+    "y": 0.5,
+    "yaw": 0.0
+  },
+  "status_code": 4,
+  "succeeded": true,
+  "message": "action completed",
+  "duration_wall_s": 23.671019406996493,
+  "final_pose": {
+    "x": 1.257343362537073,
+    "y": 0.46724675782296055,
+    "yaw": 0.011996654001365688
+  },
+  "final_goal_error_m": 0.24485713911977783,
+  "odom_path_length_m": 4.0912767821984035,
+  "minimum_scan_range_m": 0.3647720515727997,
+  "approx_minimum_body_clearance_m": 0.14477205157279968,
+  "mean_cross_track_error_m": 0.019010592404677652,
+  "p95_cross_track_error_m": 0.037242637194019323,
+  "raw_cmd_rate_hz": 20.060770754470024,
+  "smoothed_cmd_rate_hz": 20.00826310255765,
+  "raw_vx_total_variation": 1.6960483603179455,
+  "raw_wz_total_variation": 5.129916803445667,
+  "smoothed_vx_total_variation": 1.617418654561043,
+  "smoothed_wz_total_variation": 5.05787338456139,
+  "timeseries_rows": 473
+}

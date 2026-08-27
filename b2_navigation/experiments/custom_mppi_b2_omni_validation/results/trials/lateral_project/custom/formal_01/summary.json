@@ -1,0 +1,51 @@
+{
+  "scenario": "lateral_project",
+  "variant": "custom",
+  "trial": "formal_01",
+  "goal": {
+    "x": -2.0,
+    "y": 1.0,
+    "yaw": 0.0
+  },
+  "status_code": 4,
+  "succeeded": true,
+  "message": "action completed",
+  "duration_wall_s": 6.48096168399934,
+  "start_pose": {
+    "x": -1.9783885501256162,
+    "y": -0.4871525764653977,
+    "yaw": 0.0005514879146440267
+  },
+  "final_pose": {
+    "x": -1.8946771522616876,
+    "y": 0.6378028034494355,
+    "yaw": 0.11546036113593636
+  },
+  "action_result_pose": {
+    "x": -1.9041995746981226,
+    "y": 0.618688478313387,
+    "yaw": 0.08964149242208323
+  },
+  "action_result_goal_error_m": 0.39316179628618664,
+  "post_result_drift_m": 0.021354951521005507,
+  "net_displacement": {
+    "x": 0.08371139786392856,
+    "y": 1.1249553799148333
+  },
+  "final_goal_error_m": 0.3771998295927451,
+  "odom_path_length_m": 1.1128533020590423,
+  "minimum_scan_range_m": 0.5742301344871521,
+  "mean_cross_track_error_m": 0.02417857423854866,
+  "p95_cross_track_error_m": 0.042444511106488635,
+  "raw_cmd_rate_hz": 20.2585193103961,
+  "smoothed_cmd_rate_hz": 20.00189511813738,
+  "raw_lateral_command_share": 0.845176965056972,
+  "smoothed_lateral_command_share": 0.8675746522909421,
+  "raw_cmd_total_variation": {
+    "vx": 1.4673614970524795,
+    "vy": 2.945485472679138,
+    "wz": 5.188771068300412
+  },
+  "raw_peak_abs_vy_mps": 0.44533267617225647,
+  "timeseries_rows": 129
+}

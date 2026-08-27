@@ -1,0 +1,44 @@
+{
+  "scenario": "lateral_project",
+  "variant": "custom",
+  "trial": "smoke_01",
+  "goal": {
+    "x": -2.0,
+    "y": 1.0,
+    "yaw": 0.0
+  },
+  "status_code": 4,
+  "succeeded": true,
+  "message": "action completed",
+  "duration_wall_s": 6.50081932899775,
+  "start_pose": {
+    "x": -1.9783885501256162,
+    "y": -0.4871525764653977,
+    "yaw": 0.0005514879146440267
+  },
+  "final_pose": {
+    "x": -1.9036069807027662,
+    "y": 0.6197963533462454,
+    "yaw": 0.09175217469747755
+  },
+  "net_displacement": {
+    "x": 0.07478156942284997,
+    "y": 1.106948929811643
+  },
+  "final_goal_error_m": 0.392232618605401,
+  "odom_path_length_m": 1.1147877737607959,
+  "minimum_scan_range_m": 0.5683087110519409,
+  "mean_cross_track_error_m": 0.023836093413721244,
+  "p95_cross_track_error_m": 0.041343628234421156,
+  "raw_cmd_rate_hz": 20.170375837381535,
+  "smoothed_cmd_rate_hz": 20.002865369832573,
+  "raw_lateral_command_share": 0.8507280951780036,
+  "smoothed_lateral_command_share": 0.8739731850768631,
+  "raw_cmd_total_variation": {
+    "vx": 1.344123047310859,
+    "vy": 2.8914263248443604,
+    "wz": 5.151855868753046
+  },
+  "raw_peak_abs_vy_mps": 0.443260133266449,
+  "timeseries_rows": 130
+}

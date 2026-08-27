@@ -1,0 +1,31 @@
+{
+  "variant": "custom",
+  "trial": "smoke_02",
+  "goal": {
+    "x": 1.5,
+    "y": 0.5,
+    "yaw": 0.0
+  },
+  "status_code": 0,
+  "succeeded": false,
+  "message": "timeout after 120.0s",
+  "duration_wall_s": 120.00108341799933,
+  "final_pose": {
+    "x": -1.8186149868099064,
+    "y": -0.4719592845460812,
+    "yaw": 0.07324480712805059
+  },
+  "final_goal_error_m": 3.458021151105737,
+  "odom_path_length_m": 1.011525576831883,
+  "minimum_scan_range_m": 0.355892539024353,
+  "approx_minimum_body_clearance_m": 0.13589253902435303,
+  "mean_cross_track_error_m": 0.024216562499885887,
+  "p95_cross_track_error_m": 0.03581879372996636,
+  "raw_cmd_rate_hz": 17.460529014885832,
+  "smoothed_cmd_rate_hz": 18.88556610248723,
+  "raw_vx_total_variation": 5.256145252717033,
+  "raw_wz_total_variation": 165.66299889981747,
+  "smoothed_vx_total_variation": 6.243212158371534,
+  "smoothed_wz_total_variation": 127.8479187744854,
+  "timeseries_rows": 2400
+}

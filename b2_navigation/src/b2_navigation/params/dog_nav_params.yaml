@@ -1,0 +1,516 @@
+amcl:
+  ros__parameters:
+    alpha1: 0.2
+    alpha2: 0.2
+    alpha3: 0.2
+    alpha4: 0.2
+    alpha5: 0.2
+    base_frame_id: "base"
+    beam_skip_distance: 0.5
+    beam_skip_error_threshold: 0.9
+    beam_skip_threshold: 0.3
+    do_beamskip: false
+    global_frame_id: "map"
+    lambda_short: 0.1
+    laser_likelihood_max_dist: 2.0
+    laser_max_range: 100.0
+    laser_min_range: -1.0
+    laser_model_type: "likelihood_field"
+    max_beams: 60
+    max_particles: 2000
+    min_particles: 500
+    odom_frame_id: "odom"
+    pf_err: 0.05
+    pf_z: 0.99
+    recovery_alpha_fast: 0.0
+    recovery_alpha_slow: 0.0
+    resample_interval: 1
+    robot_model_type: "nav2_amcl::DifferentialMotionModel"
+    save_pose_rate: 0.5
+    sigma_hit: 0.2
+    tf_broadcast: true
+    transform_tolerance: 1.0
+    update_min_a: 0.2
+    update_min_d: 0.25
+    z_hit: 0.5
+    z_max: 0.05
+    z_rand: 0.5
+    z_short: 0.05
+    scan_topic: /converted_scan
+
+bt_navigator:
+  ros__parameters:
+    global_frame: map
+    robot_base_frame: base
+    odom_topic: /odom
+    bt_loop_duration: 10
+    default_server_timeout: 20
+    wait_for_service_timeout: 1000
+    action_server_result_timeout: 900.0
+    navigators: ["navigate_to_pose", "navigate_through_poses"]
+    navigate_to_pose:
+      plugin: "nav2_bt_navigator::NavigateToPoseNavigator"
+    navigate_through_poses:
+      plugin: "nav2_bt_navigator::NavigateThroughPosesNavigator"
+    error_code_names:
+      - compute_path_error_code
+      - follow_path_error_code
+
+controller_server:
+  ros__parameters:
+    controller_frequency: 20.0
+    min_x_velocity_threshold: 0.001
+    min_y_velocity_threshold: 0.001
+    min_theta_velocity_threshold: 0.001
+    failure_tolerance: 0.3
+    progress_checker_plugins: ["progress_checker"]
+    goal_checker_plugins: ["general_goal_checker"]
+    controller_plugins: ["FollowPath"]
+    use_realtime_priority: false
+
+    progress_checker:
+      plugin: "nav2_controller::SimpleProgressChecker"
+      required_movement_radius: 0.5
+      movement_time_allowance: 10.0
+
+    general_goal_checker:
+      stateful: True
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.35
+      yaw_goal_tolerance: 0.60
+    
+  
+    FollowPath:
+      # plugin: "nav2_mppi_controller::MPPIController"
+      # time_steps: 30
+      # model_dt: 0.1
+      # batch_size: 800
+      # motion_model: "DiffDrive"
+      # vx_max: 0.35
+      # vx_min: -0.10
+      # vy_max: 0.0
+      # wz_max: 0.7
+      # visualize: false
+      # critics: ["ConstraintCritic", "CostCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
+      # ConstraintCritic:
+      #   enabled: true
+      #   cost_weight: 4.0
+      # GoalCritic:
+      #   enabled: true
+      #   cost_weight: 5.0
+      # GoalAngleCritic:
+      #   enabled: true
+      #   cost_weight: 3.0
+      # PreferForwardCritic:
+      #   enabled: true
+      #   cost_weight: 5.0
+      # CostCritic:
+      #   enabled: true
+      #   cost_weight: 3.81
+      #   critical_cost: 300.0
+      # PathAlignCritic:
+      #   enabled: true
+      #   cost_weight: 14.0
+      # PathFollowCritic:
+      #   enabled: true
+      #   cost_weight: 5.0
+      # PathAngleCritic:
+      #   enabled: true
+      #   cost_weight: 2.0
+
+      # plugin: "nav2_custom_plugins/MPPIGPUController"
+      # num_samples: 1000
+      # prediction_horizon: 200
+      # dt: 0.1
+      # max_v: 0.45
+      # min_v: -0.25
+      # max_vy: 0.0
+      # max_w: 0.70
+      # action_std_v: 0.25
+      # action_std_vy: 0.12
+      # action_std_w: 1.5
+      # lambda: 0.95
+      # collision_cost: 5.0
+      # lookahead_time: 4.0
+      # min_lookahead_dist: 2.0
+      # path_attraction_weight: 2.0
+      # guidance_weight: 0.3
+      # cross_track_noise_scale: 0.5
+      # noise_decay_rate: 0.7
+      # vel_direction_weight: 0.15
+      # speed_reward_weight: 0.15
+      # heading_weight: 4.0
+      # lateral_guidance_scale: 0.15
+      # footprint_front: 0.60
+      # footprint_back: 0.60
+      # footprint_left: 0.25
+      # footprint_right: 0.25
+
+      plugin: "nav2_custom_plugins/MPPIGPUController"
+      # num_samples: 1000
+      # prediction_horizon: 40
+      # dt: 0.1
+      # max_v: 1.00
+      # min_v: -0.15
+      # max_vy: 0.30
+      # max_w: 0.70
+      # action_std_v: 0.15
+      # action_std_vy: 0.0
+      # action_std_w: 0.60
+      # lambda: 0.95
+      # collision_cost: 1.0
+      # lookahead_time: 2.0
+      # min_lookahead_dist: 2.0
+      # path_attraction_weight: 2.0
+      # guidance_weight: 0.3
+      # cross_track_noise_scale: 0.3
+      # noise_decay_rate: 0.7
+      # vel_direction_weight: 0.15
+      # speed_reward_weight: 0.10
+      # heading_weight: 3.0
+      # heading_anneal_start: 1.5
+      # heading_anneal_end: 0.2
+      # lateral_guidance_scale: 0.0
+      # turn_lateral_boost: 0.0
+      # ema_alpha: 0.25
+      # unknown_cost_rear: 0.0
+      # unknown_cost_side: 0.0
+      # unknown_cost_front: 0.0
+      # observation_window_duration: 5.0
+      # trust_radius: 0.5
+      # observed_area_cost_scale: 0.1
+      # fov_half_angle: 180.0
+      # fov_range: 3.0
+      # footprint_front: 0.50
+      # footprint_back: 0.50
+      # footprint_left: 0.25
+      # footprint_right: 0.25
+      # terminal_angle_dist: 0.15
+      # terminal_angle_kp: 1.2
+      # terminal_angle_tolerance: 0.10
+      # lookahead_kp: 0.2
+      # enable_lateral_bias: true
+      # use_global_costmap: true
+      # global_costmap_topic: "/global_costmap/costmap"
+      # enable_stats: false
+      # stats_file_path: "/tmp/mppi_gpu_stats.csv"
+      # mutation_thresh_vx: 0.3
+      # mutation_thresh_vy: 0.15
+      # mutation_thresh_w: 0.3
+
+      # 归一化代价: total = cost_scale × (obstacle_ratio·obs + tracking_ratio·trk + speed_ratio·spd) / horizon
+      cost_scale: 50.0
+      obstacle_ratio: 0.70
+      tracking_ratio: 0.20
+      speed_ratio: 0.05
+      # 独立偏离路径代价 (软墙)
+      path_deviation_weight: 0.0
+      path_corridor: 0.15
+
+      num_samples: 8000
+      prediction_horizon: 5
+      dt: 0.1
+      max_v: 1.0
+      min_v: -0.40
+      max_vy: 0.50
+      max_w: 0.60
+
+      action_std_v: 0.5
+      action_std_vy: 0.5
+      action_std_w: 0.4
+      nln_ratio: 0.35
+      noise_decay_rate: 0.55
+      noise_scale_floor_vx: 0.35
+      noise_scale_floor_vy: 0.30
+      noise_scale_floor_w: 0.30
+      cross_track_noise_scale: 1.5
+
+      turn_lateral_boost: 2.0
+      lateral_guidance_scale: 0.7   # vx/vy采样向lookahead方向混合比例
+
+      lambda: 4.0     # 更平滑, 降低高速样本的独占权重, 抑制激进提速
+
+      footprint_front: 0.50        # 前向半尺寸
+      footprint_back: 0.50         # 后向半尺寸
+      footprint_left: 0.30         # 左向半尺寸
+      footprint_right: 0.30
+      footprint_sample_spacing: 0.04
+      rear_obstacle_cost: 0.0
+
+      min_lookahead_dist: 0.3
+      lookahead_kp: 1.0
+
+      terminal_angle_dist: 0.0
+      terminal_angle_kp: 0.0
+      terminal_angle_tolerance: 0.0
+
+      global_trajectory_ratio: 0.3
+      global_horizon: 50
+
+      pure_rotation_ratio: 0.10
+      pure_rotation_steps: 2
+      enable_lateral_bias: false
+      enable_heading_speed_limit: true
+      heading_misalign_threshold: 1.047
+      enable_narrow_passage: false
+      enable_ema: false
+      ema_alpha: 0.1
+
+      # num_samples: 3000
+      # prediction_horizon: 10      # 预测步数 (dt×H×max_v = 0.3×10×0.8 = 2.4m, 覆盖 0.5m 前瞻点)
+      # dt: 0.3
+      # max_v: 0.80             # 前向最大速度 (m/s)，预测余量 2.0m (3.0m预测-1.0m前瞻)
+      # min_v: -0.10             # 允许微退 (原-0.50→-0.15)
+      # max_vy: 0.30            # 横向最大速度 (原0.20→0.35, 允许更大横向运动)
+      # max_w: 0.7            # 60°/s → rad/s，物理上限不改
+      # action_std_v: 0.25         # vx 噪声标准差 (原0.10→0.25, 扩大前向/后向探索覆盖)
+      # action_std_vy: 0.15       # vy 噪声标准差 (原0.10→0.15, 进一步扩大横向采样)
+      # action_std_w: 0.25        # 角速度噪声 (原0.10→0.25, 扩大角度探索)
+      # lambda: 15.0              # MPPI 温度系数 (0.5太贪→1.2, 保留采样多样性)
+      # collision_cost: 6.0         # 障碍物排斥力 (norm^6, 5太冲8太怂, 6平衡)
+      # # 前瞻：固定 2m，不再速度自适应
+      # # L = max(min_lookahead_dist, current_speed × lookahead_time)
+      # lookahead_time: 0.0          # 前瞻时间 (s)，0 = 固定前瞻距离
+      # min_lookahead_dist: 0.5    # 前瞻距离 (m)，预测到前瞻点而非终点
+      # lookahead_kp: 0.7            # 前瞻点 KP 减速: 1.0=禁用 (碰撞代价由GPU内核硬约束保证)
+      # lookahead_theta_rate: 0.5    # 前瞻点朝向最大变化率 (rad/s)，0=禁用限制，≈28°/s
+      # # ── 朝向偏差限速: 机器人朝向与目标方向偏差超阈值时强制降速 ──
+      # enable_heading_speed_limit: true           # 是否启用朝向偏差限速
+      # heading_misalign_threshold: 1.57           # 偏差阈值 (rad), 默认 90°=1.57
+      # heading_misalign_max_speed: 0.0           # 超阈值时的最大矢量速度 (m/s)
+      # path_attraction_weight: 1.0 # 路径吸引 (原0.6→0.8, /H后补偿)
+      # # 路径对齐采样：提升轨迹与全局路径的相关性
+      # guidance_weight: 1.0    # 路径引导权重 (0.3→0.5, ω强锚定路径方向)
+      # cross_track_noise_scale: 1.5 # 横向噪声缩放 (原1.2→1.5, 进一步扩大横向探索)
+      # noise_decay_rate: 0.65        # 噪声衰减 (原0.85→0.65, 末端保留35%噪声扩大探索)
+      # # ── 探索范围距离衰减: 越远越衰减 ──
+      # exploration_decay_start: 3.0     # 衰减起始距离 (m), >此距离探索=floor (跟随路径)
+      # exploration_decay_end: 0.5       # 衰减结束距离 (m), <此距离探索=1.0 (精细定位)
+      # exploration_decay_floor: 0.3     # 远距离探索下限, 最小保留 30% 探索范围
+      # spatial_decay_weight: 0.5        # 空间衰减混合权重: 0=纯时间步衰减, 1=纯空间距离衰减
+      # # ── 采样噪声下限: 各维度独立，先乘距离衰减再钳位 (0~1) ──
+      # noise_scale_floor_vx: 0.10       # vx 噪声尺度下限
+      # noise_scale_floor_vy: 0.10       # vy 噪声尺度下限 (略高，保证横向探索)
+      # noise_scale_floor_w: 0.10        # omega 噪声尺度下限 (0.20→0.30, 保留更多转弯探索)
+      # # ── 纯角速度采样: 部分轨迹先原地旋转对准路径，再平移前进 ──
+      # pure_rotation_ratio: 0.30        # 纯旋转轨迹占比 (0~1), 0=禁用
+      # pure_rotation_steps: 2           # 纯旋转持续步数
+      # pure_rotation_w_boost: 1.5       # 旋转步 omega 噪声增强倍数
+      # enable_lateral_bias: false     # 关闭横向偏好分析，避免"向右偏执"
+      # vel_direction_weight: 1.0  # 以路径方向为主，减少惯性前行
+      # speed_reward_weight: 4.0    # 速度奖励 (6→4, 进一步降前进让转弯)
+      # heading_weight: 50.0          # 统一朝向奖励权重 (8→12, 强力纠偏对抗推头)
+      # lateral_guidance_scale: 0.3  # 横向 guidance 缩放 (0.15→0.3, 允许转弯时侧移)
+      # turn_lateral_boost: 2.0    # 转弯横向增强: 急弯时自动放大 vy 引导/噪声并放松朝向约束 (0=关闭, 原4.0过大导致摆动)
+      # ema_alpha: 0.1               # 输出 EMA 平滑系数: 0=冻结, 1=无平滑 (20Hz下≈0.25s时间常数)
+      # enable_ema: false            # 是否启用 EMA 输出平滑，关闭则直接输出原始 MPPI 控制量
+      # lookahead_proximity_weight: 6.0  # 前瞻点接近奖励 (3→10→6, 适度拉向窄通道)
+      # lookahead_proximity_decay: 0.8   # 前瞻点接近奖励衰减距离 (原0.3→0.8, 扩大有效覆盖范围)
+      # # 两层控制架构距离阈值
+      # #   层级1 MPPI:            全程
+      # #   层级2 终端角度对准:     dist_to_final < terminal_angle_dist (0.10m)
+      # terminal_angle_dist: 0.10    # 终端角度对准距离 (m)
+      # terminal_angle_kp: 1.5          # 终端角度 P 控制器增益
+      # terminal_angle_tolerance: 0.07   # 终端角度容忍度 (rad), ≈4°, 留1°裕量给 5° goal checker
+      # # 碰撞箱半尺寸 (m)：前/后/左/右，用于 GPU kernel 中的多点障碍物检测
+      # # 机器人长0.40m(x轴)，宽0.60m(y轴，宽边侧面)
+      # footprint_front: 0.50        # 前向半尺寸
+      # footprint_back: 0.50         # 后向半尺寸
+      # footprint_left: 0.30         # 左向半尺寸
+      # footprint_right: 0.30        # 右向半尺寸
+      # # ── 代价函数内部参数（原硬编码常量，现暴露为可配置参数） ──
+      # cost_vy_threshold: 0.0           # vy 代价视角阈值 (m/s), 0=禁用
+      # terminal_dist_weight: 2.0        # ⑥ 终端距离代价权重
+      # path_length_weight: 0.2          # ⑤ 路径长度代价权重
+      # goal_attraction_weight: 0.3      # ① 目标渐进吸引基础权重
+      # path_follow_scale_increment: 1.2 # ③ 路径吸引时间递增因子
+      # goal_soft_radius: 0.4            # 平滑到达阻尼半径 (m)
+      # base_speed_floor_ratio: 0.55     # 保底速度比例 (防止base序列塌缩)
+      # turn_lateral_max_boost: 6.0      # 转弯横向最大放大倍数上限
+      # footprint_sample_spacing: 0.04   # 足迹碰撞检测采样间距 (原0.08→0.04, 加密提高精度)
+      # rear_obstacle_cost: 160.0    # 后方隐形障碍代价地板 (0~255), 0=禁用, 160=轻~中度, 254=致命
+      # # ── 分层规划: 全局轨迹直接预测到终点，解决短视 ──
+      # global_trajectory_ratio: 0.2       # 全局轨迹占比 (0~1), 0.2=20%轨迹预测到终点
+      # global_horizon: 30 
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      update_frequency: 5.0
+      publish_frequency: 2.0
+      global_frame: odom
+      robot_base_frame: base
+      rolling_window: true
+      width: 3
+      height: 3
+      resolution: 0.05
+      #robot_radius: 0.35
+      footprint: "[[0.50, 0.30], [0.50, -0.30], [-0.50, -0.30], [-0.50, 0.30]]"
+      always_send_full_costmap: true
+      plugins: ["obstacle_layer", "inflation_layer"]
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan
+        scan:
+          topic: /converted_scan
+          data_type: "LaserScan"
+          clearing: True
+          marking: True
+          max_obstacle_height: 2.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.1
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        inflation_radius: 0.50
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      global_frame: map
+      robot_base_frame: base
+      #robot_radius: 0.35
+      footprint: "[[0.50, 0.30], [0.50, -0.30], [-0.50, -0.30], [-0.50, 0.30]]"
+      resolution: 0.05
+      always_send_full_costmap: true
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        observation_sources: scan
+        scan:
+          topic: /converted_scan
+          data_type: "LaserScan"
+          clearing: True
+          marking: True
+          max_obstacle_height: 2.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.1
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        inflation_radius: 0.70
+
+planner_server:
+  ros__parameters:
+    expected_planner_frequency: 20.0
+    planner_plugins: ["GridBased"]
+    # [修复] 强制使用显式浮点格式，确保不被识别为 string
+    GridBased:
+      plugin: "nav2_navfn_planner/NavfnPlanner"
+      tolerance: 0.50
+      use_astar: false
+      allow_unknown: true
+
+behavior_server:
+  ros__parameters:
+    cycle_frequency: 10.0
+    behavior_plugins: ["spin", "backup", "wait"]
+    spin:
+      plugin: "nav2_behaviors/Spin"
+    backup:
+      plugin: "nav2_behaviors/BackUp"
+    wait:
+      plugin: "nav2_behaviors/Wait"
+    global_frame: map
+    local_frame: odom
+    robot_base_frame: base
+
+smoother_server:
+  ros__parameters:
+    smoother_plugins: ["simple_smoother"]
+    simple_smoother:
+      plugin: "nav2_smoother::SimpleSmoother"
+      tolerance: 1.0e-10
+      max_its: 1000
+      do_refinement: True
+
+waypoint_follower:
+  ros__parameters:
+    loop_rate: 20
+    stop_on_failure: false
+    waypoint_task_executor_plugin: "wait_at_waypoint"
+    wait_at_waypoint:
+      plugin: "nav2_waypoint_follower::WaitAtWaypoint"
+      enabled: True
+      waypoint_pause_duration: 200
+
+velocity_smoother:
+  ros__parameters:
+    smoothing_frequency: 20.0
+    scale_velocities: False
+    feedback: "OPEN_LOOP"
+    max_velocity: [0.80, 0.30, 0.70]
+    min_velocity: [-0.15, -0.30, -0.70]
+    max_accel: [1.00, 0.30, 1.20]
+    max_decel: [-1.00, -0.30, -1.20]
+    odom_topic: "odom"
+    odom_duration: 0.1
+    deadband_velocity: [0.05, 0.0, 0.10]
+    velocity_timeout: 1.0
+
+collision_monitor:
+  ros__parameters:
+    base_frame_id: "base"
+    odom_frame_id: "odom"
+    cmd_vel_in_topic: "cmd_vel_smoothed"
+    cmd_vel_out_topic: "cmd_vel"
+    state_topic: "collision_monitor_state"
+    polygons: ["FootprintApproach"]
+    observation_sources: ["scan"]
+    FootprintApproach:
+      type: "polygon"
+      action_type: "approach"
+      enabled: False
+    scan:
+      type: "scan"
+      topic: "/converted_scan"
+      enabled: True
+
+docking_server:
+  ros__parameters:
+    controller_frequency: 20.0
+    initial_perception_timeout: 5.0
+    wait_charge_timeout: 5.0
+    dock_approach_timeout: 30.0
+    undock_linear_tolerance: 0.05
+    undock_angular_tolerance: 0.1
+    max_retries: 3
+    base_frame: "base"
+    fixed_frame: "odom"
+    dock_backwards: false
+    dock_prestaging_tolerance: 0.5
+    dock_plugins: ["simple_charging_dock"]
+    simple_charging_dock:
+      plugin: "opennav_docking::SimpleChargingDock"
+      docking_threshold: 0.05
+      staging_x_offset: -0.7
+      use_external_detection_pose: true
+      use_battery_status: false 
+      use_stall_detection: false 
+      external_detection_timeout: 1.0
+      external_detection_translation_x: -0.18
+      external_detection_translation_y: 0.0
+      external_detection_rotation_roll: -1.57
+      external_detection_rotation_pitch: -1.57
+      external_detection_rotation_yaw: 0.0
+      filter_coef: 0.1
+    controller:
+      k_phi: 3.0
+      k_delta: 2.0
+      v_linear_min: 0.15
+      v_linear_max: 0.50
+      use_collision_detection: true
+      costmap_topic: "local_costmap/costmap_raw"
+      footprint_topic: "local_costmap/published_footprint"
+      transform_tolerance: 0.10
+      projection_time: 5.00
+      simulation_step: 0.10
+      dock_collision_threshold: 0.30

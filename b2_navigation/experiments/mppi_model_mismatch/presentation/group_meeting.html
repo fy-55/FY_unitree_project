@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>B2 GPU-MPPI 运动模型失配：代码审计与离线敏感性分析</title>
+  <style>
+    :root {
+      --navy: #132238;
+      --blue: #1769aa;
+      --cyan: #1ba3a3;
+      --orange: #ed8b16;
+      --red: #c0392b;
+      --ink: #17202a;
+      --muted: #5f6b76;
+      --paper: #ffffff;
+      --soft: #eef4f8;
+      --line: #d7e0e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: #1b2530; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+      color: var(--ink);
+      background: #1b2530;
+    }
+    .slide {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      margin: 22px auto;
+      padding: 56px 72px 44px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 96% 6%, rgba(23,105,170,.10), transparent 23%),
+        linear-gradient(135deg, #fff 0%, #fff 68%, #f5f9fc 100%);
+      box-shadow: 0 12px 40px rgba(0,0,0,.32);
+      page-break-after: always;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      font-size: 50px;
+      line-height: 1.22;
+      color: var(--navy);
+      letter-spacing: .4px;
+      max-width: 1080px;
+    }
+    h2 {
+      margin-bottom: 30px;
+      font-size: 35px;
+      line-height: 1.2;
+      color: var(--navy);
+      border-left: 8px solid var(--blue);
+      padding-left: 18px;
+    }
+    h3 { font-size: 23px; color: var(--blue); margin-bottom: 12px; }
+    p, li { font-size: 21px; line-height: 1.58; }
+    ul { margin: 8px 0 0; padding-left: 28px; }
+    li { margin: 8px 0; }
+    strong { color: var(--navy); }
+    code {
+      font-family: "Noto Sans Mono CJK SC", "DejaVu Sans Mono", monospace;
+      background: #edf2f5;
+      border-radius: 5px;
+      padding: 2px 7px;
+      color: #173d5b;
+    }
+    pre {
+      margin: 0;
+      padding: 19px 22px;
+      border-radius: 10px;
+      color: #eaf4fb;
+      background: #152535;
+      font: 17px/1.52 "Noto Sans Mono CJK SC", "DejaVu Sans Mono", monospace;
+      white-space: pre-wrap;
+    }
+    .subtitle { font-size: 27px; color: var(--blue); margin: 24px 0 38px; }
+    .meta { font-size: 20px; color: var(--muted); line-height: 1.7; }
+    .kicker {
+      display: inline-block;
+      margin-bottom: 22px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      color: #fff;
+      background: var(--blue);
+      font-size: 17px;
+      letter-spacing: 1px;
+    }
+    .disclaimer {
+      position: absolute;
+      top: 18px;
+      right: 31px;
+      color: #8a4b00;
+      font-size: 15px;
+      font-weight: 700;
+      background: #fff2d9;
+      border: 1px solid #ffd591;
+      border-radius: 18px;
+      padding: 6px 12px;
+    }
+    .footer {
+      position: absolute;
+      left: 72px;
+      right: 72px;
+      bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      color: #788693;
+      font-size: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .grid-40-60 { display: grid; grid-template-columns: 40% 60%; gap: 28px; }
+    .grid-55-45 { display: grid; grid-template-columns: 55% 45%; gap: 28px; }
+    .card {
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 4px 14px rgba(19,34,56,.06);
+    }
+    .card p, .card li { font-size: 18px; line-height: 1.47; }
+    .fact {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 20px 0 26px;
+    }
+    .fact > div {
+      padding: 18px 12px;
+      text-align: center;
+      border-radius: 11px;
+      background: var(--soft);
+      border-bottom: 4px solid var(--blue);
+    }
+    .fact b { display: block; font-size: 29px; color: var(--blue); }
+    .fact span { font-size: 16px; color: var(--muted); }
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 16px 0 24px;
+    }
+    .flow .box {
+      flex: 1;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10px;
+      border-radius: 10px;
+      background: #eaf4fb;
+      border: 1px solid #b9d8ec;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .flow .arrow { color: var(--blue); font-size: 25px; }
+    .equation {
+      padding: 18px 22px;
+      border-left: 6px solid var(--cyan);
+      background: #effafa;
+      font: 21px/1.6 "Noto Sans Mono CJK SC", monospace;
+    }
+    .note {
+      margin-top: 18px;
+      padding: 14px 18px;
+      border-radius: 8px;
+      background: #fff7e8;
+      border-left: 5px solid var(--orange);
+      font-size: 17px;
+      line-height: 1.5;
+    }
+    .figure {
+      width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+      display: block;
+    }
+    .figure.compact { max-height: 430px; }
+    .metric-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 17px;
+    }
+    .metric-table th, .metric-table td {
+      padding: 11px 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+    .metric-table th { background: #eaf4fb; color: var(--navy); }
+    .bad { color: var(--red); font-weight: 800; }
+    .good { color: #16825d; font-weight: 800; }
+    .done { border-left: 5px solid #16825d; }
+    .next { border-left: 5px solid var(--orange); }
+    .title-slide {
+      padding-top: 118px;
+      background:
+        linear-gradient(105deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.93) 56%, rgba(225,239,248,.90) 100%),
+        repeating-linear-gradient(45deg, #eaf3f8 0, #eaf3f8 2px, transparent 2px, transparent 17px);
+    }
+    .title-slide::after {
+      content: "";
+      position: absolute;
+      width: 390px;
+      height: 390px;
+      right: -90px;
+      bottom: -100px;
+      border: 60px solid rgba(23,105,170,.12);
+      border-radius: 50%;
+    }
+    .small { font-size: 16px; color: var(--muted); }
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      html, body { background: white; }
+      .slide { margin: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="slide title-slide" id="s1">
+    <span class="kicker">B2 导航控制 · 阶段性进展</span>
+    <h1>GPU-MPPI 运动模型失配：<br>代码审计与离线敏感性分析</h1>
+    <p class="subtitle">把“第一小段预测是否可信”转化为可测量的研究问题</p>
+    <p class="meta">机械工程硕士研究生组会汇报<br>组会日期：2026-07-28</p>
+    <div class="disclaimer">离线敏感性实验 · 非真机数据</div>
+    <div class="footer"><span>Unitree B2 × ROS 2 Nav2 × GPU-MPPI</span><span>1 / 8</span></div>
+  </section>
+
+  <section class="slide" id="s2">
+    <h2>1. 从现有工程中确认的控制链与代码事实</h2>
+    <div class="flow">
+      <div class="box">FollowPath<br>Nav2控制循环</div><div class="arrow">→</div>
+      <div class="box">自定义<br>GPU-MPPI</div><div class="arrow">→</div>
+      <div class="box">velocity_smoother<br>OPEN_LOOP</div><div class="arrow">→</div>
+      <div class="box">SportClient<br>B2执行</div><div class="arrow">→</div>
+      <div class="box">/odom<br>状态反馈</div>
+    </div>
+    <div class="fact">
+      <div><b>20 Hz</b><span>控制器重算频率</span></div>
+      <div><b>8000</b><span>每轮候选序列</span></div>
+      <div><b>5 × 0.1 s</b><span>预测步数与模型步长</span></div>
+      <div><b>0.5 s</b><span>单轮预测总时域</span></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>GPU rollout</h3>
+        <pre>// 候选速度直接积分未来位姿
+x += (vx cosθ - vy sinθ) · dt
+y += (vx sinθ + vy cosθ) · dt
+θ += omega · dt</pre>
+      </div>
+      <div class="card">
+        <h3>发现的待验证假设</h3>
+        <ul>
+          <li><code>current_vel</code> 当前未参与预测；</li>
+          <li>候选速度被视为可立即实现的机身速度；</li>
+          <li>平滑器、步态响应和打滑可能造成执行差异。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="disclaimer">离线敏感性实验 · 非真机数据</div>
+    <div class="footer"><span>证据：dog_nav_params.yaml；mppi_gpu_controller.cpp；mppi_gpu_kernels.cu</span><span>2 / 8</span></div>
+  </section>
+
+  <section class="slide" id="s3">
+    <h2>2. 研究问题：模型误差何时会改变速度选择？</h2>
+    <div class="grid-55-45">
+      <div>
+        <div class="card">
+          <h3>当前理想运动学假设</h3>
+          <div class="equation">位移 = 候选速度 × dt</div>
+          <p>如果候选速度为 <code>vy=0.4m/s</code>，模型认为 0.5s 后横向位移为 0.20m。</p>
+        </div>
+        <div class="card" style="margin-top:18px">
+          <h3>用于敏感性测试的假设执行模型</h3>
+          <div class="equation">dv/dt = [scale·u(t-delay) − v] / τ</div>
+          <p>分别注入命令延迟、速度滞后和稳态比例误差，观察候选轨迹的净空判断是否改变。</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>判断标准</h3>
+        <ul>
+          <li>误差小，但候选轨迹排序不变：<strong>仍有控制价值</strong>；</li>
+          <li>误差让安全/碰撞判断翻转：<strong class="bad">可能选错当前速度</strong>；</li>
+          <li>滚动反馈会重置预测起点，但系统性模型偏差可能每轮重复。</li>
+        </ul>
+        <div class="note">
+          本页提出的是“待验证假设”，不是已确认的 B2 缺陷。
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">离线敏感性实验 · 非真机数据</div>
+    <div class="footer"><span>目标：把概念争论转化为可测量指标</span><span>3 / 8</span></div>
+  </section>
+
+  <section class="slide" id="s4">
+    <h2>3. 时间尺度审计：滚动优化正常，第一小段仍需验证</h2>
+    <div class="grid-40-60">
+      <div>
+        <div class="card">
+          <h3>每 0.05s 发生一次</h3>
+          <pre>测量当前位姿
+  ↓
+预测未来 5 步
+  ↓
+输出第一个速度
+  ↓
+执行约 0.05s
+  ↓
+重新测量并重算</pre>
+        </div>
+        <div class="note">
+          后四步本来就是条件预测，不要求全部执行。核心问题变成：<strong>每轮真正执行的第一小段是否足够符合模型。</strong>
+        </div>
+      </div>
+      <img class="figure compact" src="../results/timing_chain.png" alt="当前配置时间尺度">
+    </div>
+    <div class="disclaimer">离线敏感性实验 · 非真机数据</div>
+    <div class="footer"><span>控制器0.05s；模型单步0.1s；局部代价地图约0.2s</span><span>4 / 8</span></div>
+  </section>
+
+  <section class="slide" id="s5">
+    <h2>4. 离线结果：同一命令在假设执行模型下差异明显</h2>
+    <div class="grid-55-45">
+      <img class="figure compact" src="../results/horizon_displacement.png" alt="预测时域位移差异">
+      <div>
+        <table class="metric-table">
+          <thead>
+            <tr><th>假设模型</th><th>0.5s位移</th><th>预测比</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>理想</td><td>0.200m</td><td class="good">100%</td></tr>
+            <tr><td>轻度失配</td><td>0.105m</td><td>52.3%</td></tr>
+            <tr><td>严重失配</td><td>0.036m</td><td class="bad">17.9%</td></tr>
+          </tbody>
+        </table>
+        <div class="card" style="margin-top:24px">
+          <h3>实验设置</h3>
+          <p><code>vy=0.4m/s</code>、<code>H=5</code>、<code>dt=0.1s</code>。</p>
+          <p class="small">轻度与严重失配参数为人为压力测试值，尚未由真机数据标定。</p>
+        </div>
+        <div class="note">价值在于建立了可复现实验与量化指标，而不是证明真实 B2 就有这些具体参数。</div>
+      </div>
+    </div>
+    <div class="disclaimer">离线敏感性实验 · 非真机数据</div>
+    <div class="footer"><span>脚本：experiments/mppi_model_mismatch/run_experiment.py</span><span>5 / 8</span></div>
+  </section>
+
+  <section class="slide" id="s6">
+    <h2>5. 简化净空实验：模型失配可能翻转安全判断</h2>
+    <div class="grid-55-45">
+      <img class="figure compact" src="../results/clearance_classification.png" alt="简化净空判断">
+      <div>
+        <div class="card">
+          <h3>示例判据</h3>
+          <p>假设 0.5s 内至少需要横移 <strong>0.15m</strong> 才能获得净空。</p>
+          <ul>
+            <li>理想预测认为 <code>vy≥0.3m/s</code> 可行；</li>
+            <li>两组失配模型下，同一候选速度可能达不到净空要求；</li>
+            <li>候选轨迹代价因此可能被错误估计。</li>
+          </ul>
+        </div>
+        <div class="note">
+          这是简化的一维敏感性分析，不是完整 Nav2 障碍物实验；下一步需要放入二维 costmap 闭环验证。
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">离线敏感性实验 · 非真机数据</div>
+    <div class="footer"><span>结论边界：说明“可能性”，尚未证明真实导航性能下降</span><span>6 / 8</span></div>
+  </section>
+
+  <section class="slide" id="s7">
+    <h2>6. 最小闭环演示：重规划能纠偏，但无法撤销已越过的边界</h2>
+    <div class="grid-55-45">
+      <img class="figure compact" src="../results/closed_loop_comparison.png" alt="闭环MPPI压力测试">
+      <div>
+        <div class="card">
+          <h3>不是把结果写死在图里</h3>
+          <ul>
+            <li>每个控制周期重新生成 <strong>8000</strong> 条候选；</li>
+            <li><code>H=5</code>、<code>dt=0.1s</code>，按指数权重更新；</li>
+            <li>只执行第一条命令，20Hz滚动重算；</li>
+            <li>两个控制器驱动完全相同的虚拟对象。</li>
+          </ul>
+        </div>
+        <table class="metric-table" style="margin-top:18px">
+          <thead>
+            <tr><th>预测模型</th><th>安全余量</th><th>结果</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>理想模型</td><td class="bad">−0.0077m</td><td class="bad">越界</td></tr>
+            <tr><td>响应感知</td><td class="good">+0.0428m</td><td class="good">安全</td></tr>
+          </tbody>
+        </table>
+        <div class="note">
+          红线随后会纠偏返回，但已经发生的安全边界越界不能被下一轮重规划撤销。
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">独立一维闭环原型 · 人为压力参数 · 非Nav2/Gazebo或B2数据</div>
+    <div class="footer"><span>现场命令：python3 experiments/mppi_model_mismatch/run_closed_loop_demo.py</span><span>7 / 8</span></div>
+  </section>
+
+  <section class="slide" id="s8">
+    <h2>7. 阶段成果与下一步闭环</h2>
+    <div class="grid-2">
+      <div class="card done">
+        <h3>已经完成</h3>
+        <ul>
+          <li>串联 FollowPath → GPU插件 → 速度平滑 → B2反馈链路；</li>
+          <li>提取控制频率、采样数、时域和模型步长；</li>
+          <li>定位 <code>current_vel</code> 未使用和直接速度积分假设；</li>
+          <li>实现可复现的离线敏感性实验；</li>
+          <li>实现8000候选/周期的最小闭环压力测试；</li>
+          <li>输出 PNG、CSV、汇报稿和评价指标。</li>
+        </ul>
+      </div>
+      <div class="card next">
+        <h3>下一步：先仿真，后真机</h3>
+        <ol style="padding-left:26px">
+          <li>建立二维假 B2：发布 <code>/odom</code>、TF 和假激光；</li>
+          <li>统一地图下比较理想、延迟、死区和打滑模型；</li>
+          <li>记录成功率、路径误差、最小障碍距离和控制抖动；</li>
+          <li>低速真机采集 <code>/cmd_vel_nav</code>、<code>/cmd_vel</code>、<code>/odom</code>；</li>
+          <li>用真实数据决定一阶模型、RLS或学习残差是否必要。</li>
+        </ol>
+      </div>
+    </div>
+    <div class="note" style="margin-top:24px">
+      当前定位：<strong>完成了问题定义、代码证据和离线实验基线；创新性与真机有效性仍待验证。</strong>
+    </div>
+    <div class="disclaimer">离线敏感性实验 · 非真机数据</div>
+    <div class="footer"><span>研究原则：可复现、可证伪、不把模拟数据当真机结果</span><span>8 / 8</span></div>
+  </section>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    let current = 0;
+    function go(delta) {
+      current = Math.max(0, Math.min(slides.length - 1, current + delta));
+      slides[current].scrollIntoView({behavior: "smooth", block: "center"});
+    }
+    document.addEventListener("keydown", (event) => {
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) { event.preventDefault(); go(1); }
+      if (["ArrowLeft", "PageUp"].includes(event.key)) { event.preventDefault(); go(-1); }
+      if (event.key === "Home") { current = 0; slides[0].scrollIntoView({block: "center"}); }
+      if (event.key === "End") { current = slides.length - 1; slides[current].scrollIntoView({block: "center"}); }
+    });
+  </script>
+</body>
+</html>

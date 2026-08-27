@@ -1,0 +1,31 @@
+{
+  "variant": "custom",
+  "trial": "smoke_01",
+  "goal": {
+    "x": 1.5,
+    "y": 0.5,
+    "yaw": 0.0
+  },
+  "status_code": 0,
+  "succeeded": false,
+  "message": "TimeoutError: Nav2 action server or AMCL pose not ready",
+  "duration_wall_s": 0.0,
+  "final_pose": {
+    "x": NaN,
+    "y": NaN,
+    "yaw": NaN
+  },
+  "final_goal_error_m": NaN,
+  "odom_path_length_m": 0.0,
+  "minimum_scan_range_m": NaN,
+  "approx_minimum_body_clearance_m": NaN,
+  "mean_cross_track_error_m": NaN,
+  "p95_cross_track_error_m": NaN,
+  "raw_cmd_rate_hz": NaN,
+  "smoothed_cmd_rate_hz": NaN,
+  "raw_vx_total_variation": 0.0,
+  "raw_wz_total_variation": 0.0,
+  "smoothed_vx_total_variation": 0.0,
+  "smoothed_wz_total_variation": 0.0,
+  "timeseries_rows": 0
+}

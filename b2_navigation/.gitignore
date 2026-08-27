@@ -1,0 +1,38 @@
+# ROS 2 / colcon
+/build/
+/install/
+/log/
+/logs/
+**/build/
+**/install/
+**/log/
+
+# Bags and physical-environment maps
+*.bag
+*.db3
+*.mcap
+/src/b2_navigation/maps/*
+!/src/b2_navigation/maps/README.md
+
+# Generated experiment data. Keep curated reports and figures.
+/experiments/**/data/
+/experiments/**/log/
+/experiments/**/results/runtime/
+/experiments/**/config/generated/
+/experiments/mppi_model_mismatch/results/full_1d/full_timeseries.csv
+/experiments/mppi_model_mismatch/results/full_1d/candidate_ranking_audit.csv
+/experiments/mppi_model_mismatch/presentation/*.pdf
+
+# Scratch configurations and caches
+/temp/
+/PROJECT_ARCHITECTURE.md
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/
+.idea/
+*.swp
+*~
+*.bak
+.DS_Store
+Thumbs.db

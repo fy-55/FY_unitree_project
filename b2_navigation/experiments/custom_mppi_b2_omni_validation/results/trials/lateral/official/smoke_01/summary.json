@@ -1,0 +1,44 @@
+{
+  "scenario": "lateral",
+  "variant": "official",
+  "trial": "smoke_01",
+  "goal": {
+    "x": -2.0,
+    "y": 1.0,
+    "yaw": 0.0
+  },
+  "status_code": 0,
+  "succeeded": false,
+  "message": "timeout after 90.0s",
+  "duration_wall_s": 90.00225391500135,
+  "start_pose": {
+    "x": -1.9783885501256162,
+    "y": -0.4871525764653977,
+    "yaw": 0.0005514879146440267
+  },
+  "final_pose": {
+    "x": -1.752549430728067,
+    "y": 0.5432544889969321,
+    "yaw": 0.030348716899373473
+  },
+  "net_displacement": {
+    "x": 0.2258391193975493,
+    "y": 1.0304070654623299
+  },
+  "final_goal_error_m": 0.5194691964442718,
+  "odom_path_length_m": 2.7697717735181064,
+  "minimum_scan_range_m": 0.4695810377597809,
+  "mean_cross_track_error_m": 0.022141053530075127,
+  "p95_cross_track_error_m": 0.05616409616210903,
+  "raw_cmd_rate_hz": 17.638279922357576,
+  "smoothed_cmd_rate_hz": 18.89358402652609,
+  "raw_lateral_command_share": 0.4973546936073916,
+  "smoothed_lateral_command_share": 0.569554167878517,
+  "raw_cmd_total_variation": {
+    "vx": 25.280309504363686,
+    "vy": 20.11486588482512,
+    "wz": 30.031254479661584
+  },
+  "raw_peak_abs_vy_mps": 0.3060898184776306,
+  "timeseries_rows": 1800
+}
