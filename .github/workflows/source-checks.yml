@@ -1,0 +1,19 @@
+name: Source checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  portable-source-checks:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - name: Install lightweight parser dependency
+        run: python3 -m pip install --user pyyaml
+      - name: Check scripts and configuration
+        run: ./scripts/check_source.sh
+      - name: Run model-mismatch self-test
+        run: python3 experiments/mppi_model_mismatch/run_full_1d_experiment.py --self-test-only

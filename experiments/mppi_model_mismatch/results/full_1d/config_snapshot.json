@@ -1,0 +1,97 @@
+{
+  "controller": {
+    "control_frequency": 20.0,
+    "num_samples": 8000,
+    "horizon": 5,
+    "model_dt": 0.1,
+    "min_v": -0.4,
+    "max_v": 1.0,
+    "action_std_v": 0.5,
+    "temperature": 4.0,
+    "nln_ratio": 0.35,
+    "nln_sigma_mult": 3.0,
+    "noise_decay_rate": 0.55,
+    "noise_scale_floor_vx": 0.35,
+    "lateral_guidance_scale": 0.7,
+    "pure_rotation_ratio": 0.1,
+    "pure_rotation_steps": 2,
+    "exploration_decay_start": 3.0,
+    "exploration_decay_end": 0.5,
+    "exploration_decay_floor": 0.3,
+    "spatial_decay_weight": 0.5,
+    "cost_scale": 50.0,
+    "obstacle_ratio": 0.7,
+    "tracking_ratio": 0.2,
+    "speed_ratio": 0.05,
+    "footprint_front": 0.5,
+    "footprint_back": 0.5,
+    "footprint_sample_spacing": 0.04,
+    "lookahead_distance": 0.3,
+    "goal_tolerance": 0.35,
+    "tail_decay": 0.5
+  },
+  "velocity_smoother": {
+    "frequency": 20.0,
+    "min_velocity": -0.15,
+    "max_velocity": 0.8,
+    "max_accel": 1.0,
+    "max_decel": -1.0,
+    "deadband": 0.05,
+    "feedback": "OPEN_LOOP",
+    "scale_velocities": false
+  },
+  "artificial_plants": [
+    {
+      "key": "smoother_only",
+      "delay_s": 0.0,
+      "tau_s": 0.0,
+      "scale": 1.0
+    },
+    {
+      "key": "mild",
+      "delay_s": 0.05,
+      "tau_s": 0.15,
+      "scale": 0.9
+    },
+    {
+      "key": "stress",
+      "delay_s": 0.1,
+      "tau_s": 0.45,
+      "scale": 1.0
+    }
+  ],
+  "tasks": [
+    {
+      "key": "goal_stop",
+      "label": "无墙目标停车",
+      "goal_x": 1.0,
+      "duration_s": 6.0,
+      "wall_x": null,
+      "desired_clearance": 0.0
+    },
+    {
+      "key": "wall_stop",
+      "label": "合法墙前目标停车",
+      "goal_x": 0.85,
+      "duration_s": 6.0,
+      "wall_x": 1.5,
+      "desired_clearance": 0.1
+    }
+  ],
+  "monte_carlo_seeds": 20,
+  "sensitivity_seeds": 8,
+  "source_files": {
+    "src/b2_navigation/params/dog_nav_params.yaml": "f32c2a4f2d014c6107aeb21eb902b6b5418191915f43332f12b3d304869c2bce",
+    "src/nav2_custom_plugins/src/mppi_gpu_controller.cpp": "ad0e37e045f83df79b0e95e2bda4a09b7368a3eb10fbc58b1bb4d588d0623aa5",
+    "src/nav2_custom_plugins/src/mppi_gpu_kernels.cu": "fe48c4c4e9b7fd32aac39083c91571a140ce7092ee725a8bf72715db51c209c5",
+    "src/nav2_custom_plugins/src/mppi_gpu_rewards.cuh": "4aeec7aa0b7602b239723a5f8891bb5a68c8e5886d27fe646a0ca12f91ec50ff"
+  },
+  "scope": "Offline one-dimensional longitudinal projection. Artificial plant parameters; not B2, Nav2/Gazebo, or real-robot evidence.",
+  "excluded_as_not_applicable_in_1d": [
+    "vy lateral motion",
+    "omega/yaw dynamics",
+    "PathAlign cost on a straight coincident path",
+    "PathAngle cost on a zero-heading-error path",
+    "2-D lateral bias and narrow-passage state machine"
+  ]
+}

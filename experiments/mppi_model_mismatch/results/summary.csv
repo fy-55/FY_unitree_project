@@ -1,0 +1,4 @@
+scenario,tau_s,delay_s,velocity_scale,command_mps,predicted_y_0p1_m,actual_y_0p1_m,predicted_y_0p5_m,actual_y_0p5_m,horizon_error_m,actual_over_predicted,predicted_safe_at_0p15m,actual_safe_at_0p15m
+ideal,0.000,0.000,1.000,0.400,0.040000,0.040000,0.200000,0.200000,0.000000,1.000000,1,1
+mild,0.150,0.050,0.850,0.400,0.040000,0.002543,0.200000,0.104539,-0.095461,0.522695,1,0
+severe,0.300,0.100,0.500,0.400,0.040000,0.000000,0.200000,0.035816,-0.164184,0.179079,1,0

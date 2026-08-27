@@ -1,0 +1,31 @@
+{
+  "variant": "custom",
+  "trial": "straight_01",
+  "goal": {
+    "x": -1.0,
+    "y": -0.5,
+    "yaw": 0.0
+  },
+  "status_code": 4,
+  "succeeded": true,
+  "message": "action completed",
+  "duration_wall_s": 9.090576786002202,
+  "final_pose": {
+    "x": -1.250323884848951,
+    "y": -0.5275558049413651,
+    "yaw": 0.05793206528892421
+  },
+  "final_goal_error_m": 0.2518359976489411,
+  "odom_path_length_m": 0.7354691910782687,
+  "minimum_scan_range_m": 0.42635926604270935,
+  "approx_minimum_body_clearance_m": 0.20635926604270935,
+  "mean_cross_track_error_m": 0.01907814354367626,
+  "p95_cross_track_error_m": 0.042555998586574495,
+  "raw_cmd_rate_hz": 20.172080797224634,
+  "smoothed_cmd_rate_hz": 20.000769086560805,
+  "raw_vx_total_variation": 2.3307383209466934,
+  "raw_wz_total_variation": 10.72324437648058,
+  "smoothed_vx_total_variation": 2.3151335567235947,
+  "smoothed_wz_total_variation": 7.613272559046746,
+  "timeseries_rows": 181
+}
