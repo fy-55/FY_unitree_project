@@ -1,0 +1,58 @@
+static_footprint_publisher:
+  ros__parameters:
+    use_sim_time: false
+    topic: /g1_nav/static_footprint
+    frame_id: base_footprint
+    publish_rate: 2.0
+    # 与Nav2一致：0.40 x 0.70 m原始外廓加0.03 m padding。
+    # raw  x [-0.20, 0.20], y [-0.35, 0.35]
+    # safe x [-0.23, 0.23], y [-0.38, 0.38]
+    points: [0.23, 0.38, 0.23, -0.38, -0.23, -0.38, -0.23, 0.38]
+
+collision_monitor:
+  ros__parameters:
+    use_sim_time: false
+
+    # Velocity safety chain:
+    #   velocity_smoother -> /cmd_vel -> collision_monitor -> /cmd_vel_safe
+    cmd_vel_in_topic: /cmd_vel
+    cmd_vel_out_topic: /cmd_vel_safe
+
+    base_frame_id: base_footprint
+    odom_frame_id: odom
+    transform_tolerance: 0.30
+
+    # /scan is expected near 10 Hz. Humble ignores source data older than
+    # 0.50 s, but does not fail closed when /scan is absent. The future G1
+    # motion bridge must independently reject motion when /scan is stale.
+    source_timeout: 0.50
+    base_shift_correction: true
+    stop_pub_timeout: 1.0
+
+    # Direction-aware collision protection.  The old fixed stop polygon
+    # stopped every command whenever a wall entered the zone, including a
+    # command that would move the robot away from that wall.  The approach
+    # model instead projects the commanded motion with the current footprint
+    # and regulates velocity only when that motion approaches a collision.
+    polygons: [FootprintApproach]
+
+    FootprintApproach:
+      type: polygon
+      action_type: approach
+      # Humble's polygon APPROACH model always obtains the robot shape from a
+      # topic.  Use our fixed publisher so safety remains available while the
+      # local costmap is inactive.
+      footprint_topic: /g1_nav/static_footprint
+      # Start regulating when the predicted collision is less than 1.5 s
+      # away.  This is deliberately conservative for initial G1 testing.
+      time_before_collision: 1.50
+      simulation_time_step: 0.05
+      max_points: 8
+      visualize: false
+      enabled: true
+
+    observation_sources: [scan]
+    scan:
+      type: scan
+      topic: /scan
+      enabled: true

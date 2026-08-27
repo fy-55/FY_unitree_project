@@ -1,0 +1,58 @@
+<!--
+  G1 single-goal navigation tree.
+
+  Normal operation:
+    - Replan the global path at 1 Hz while FollowPath is running.
+
+  Failure handling:
+    - Stop the failed FollowPath action.
+    - Clear stale costmap data, wait one second, and retry from the current pose.
+    - Keep the navigation action active until the goal succeeds or the user cancels it.
+
+  Deliberately excluded for the first real-robot stage:
+    - Spin
+    - BackUp
+    - DriveOnHeading
+-->
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RecoveryNode number_of_retries="10" name="NavigateWithSafeReplanning">
+      <PipelineSequence name="NavigateWithReplanning">
+        <RateController hz="2.0">
+          <RecoveryNode number_of_retries="1" name="ComputePathToPose">
+            <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+            <Sequence name="ClearGlobalAndWait">
+              <ClearEntireCostmap
+                name="ClearGlobalCostmap-Context"
+                service_name="global_costmap/clear_entirely_global_costmap"/>
+              <Wait wait_duration="1"/>
+            </Sequence>
+          </RecoveryNode>
+        </RateController>
+
+        <RecoveryNode number_of_retries="1" name="FollowPath">
+          <FollowPath path="{path}" controller_id="FollowPath"/>
+          <Sequence name="ClearLocalAndWait">
+            <ClearEntireCostmap
+              name="ClearLocalCostmap-Context"
+              service_name="local_costmap/clear_entirely_local_costmap"/>
+            <Wait wait_duration="1"/>
+          </Sequence>
+        </RecoveryNode>
+      </PipelineSequence>
+
+      <ReactiveFallback name="SafeRecoveryFallback">
+        <GoalUpdated/>
+        <Sequence name="ClearBothWaitAndReplan">
+          <ClearEntireCostmap
+            name="ClearLocalCostmap-Recovery"
+            service_name="local_costmap/clear_entirely_local_costmap"/>
+          <ClearEntireCostmap
+            name="ClearGlobalCostmap-Recovery"
+            service_name="global_costmap/clear_entirely_global_costmap"/>
+          <Wait wait_duration="1"/>
+        </Sequence>
+      </ReactiveFallback>
+    </RecoveryNode>
+  </BehaviorTree>
+</root>

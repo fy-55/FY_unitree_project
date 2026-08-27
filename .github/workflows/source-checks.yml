@@ -1,0 +1,15 @@
+name: Source checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  portable-source-checks:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install lightweight parser dependency
+        run: python3 -m pip install --user pyyaml
+      - name: Check scripts and configuration
+        run: ./scripts/check_source.sh

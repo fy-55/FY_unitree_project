@@ -1,0 +1,37 @@
+<!--
+  单次规划行为树 (NavigateToPose)
+
+  SequenceStar: 已成功的子节点失败后不复位 — ComputePathToPose 只跑一次。
+  RecoveryNode(INT_MAX): FollowPath 失败永远不会导致 BT 终止。
+  新目标到达时 NavigateToPose action 重建 BT → 重新规划。
+-->
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <SequenceStar name="PlanOnceNavigate">
+      <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+
+      <RecoveryNode number_of_retries="2147483647" name="FollowPathRecovery">
+        <PipelineSequence name="FollowPathPipeline">
+          <FollowPath path="{path}" controller_id="FollowPath"/>
+          <ClearEntireCostmap name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
+        </PipelineSequence>
+
+        <ReactiveFallback name="RecoveryFallback">
+          <GoalUpdated/>
+
+          <RoundRobin name="RecoveryActions">
+            <DriveOnHeading dist_to_travel="0.10" speed="0.10"
+              time_allowance="10" server_name="escape"/>
+            <BackUp backup_dist="0.30" backup_speed="0.10"/>
+            <Sequence name="ClearAndBackup">
+              <ClearEntireCostmap name="ClearLocalCostmap" service_name="local_costmap/clear_entirely_local_costmap"/>
+              <ClearEntireCostmap name="ClearGlobalCostmap" service_name="global_costmap/clear_entirely_global_costmap"/>
+              <BackUp backup_dist="0.30" backup_speed="0.05"/>
+            </Sequence>
+          </RoundRobin>
+
+        </ReactiveFallback>
+      </RecoveryNode>
+    </SequenceStar>
+  </BehaviorTree>
+</root>

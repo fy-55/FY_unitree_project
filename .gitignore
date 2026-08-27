@@ -1,0 +1,37 @@
+# ROS 2 / colcon generated files
+/build/
+/install/
+/log/
+**/build/
+**/build-local/
+**/install/
+**/log/
+
+# Recorded and generated runtime data
+/bags/
+*.bag
+*.db3
+*.mcap
+/experiments/output/
+
+# Private physical-environment maps. Keep only the publishing policy file.
+/src/g1_nav_slam/maps/*
+!/src/g1_nav_slam/maps/README.md
+
+# The local official SLAM example has no redistributable license in this copy.
+/third_party/unitree_slam/
+
+# Python / editor / OS files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/
+.idea/
+*.swp
+*~
+*.bak
+.DS_Store
+Thumbs.db
+
+# Local operator notes contain machine-specific paths and interface names.
+/真机与仿真导航启动步骤.md

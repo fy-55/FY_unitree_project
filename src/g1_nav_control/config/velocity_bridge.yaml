@@ -1,0 +1,19 @@
+g1_velocity_bridge:
+  ros__parameters:
+    # Read-only after node startup. False means no API 7105 messages are sent.
+    enable_motion: false
+
+    # Fixed real-robot chain in the node:
+    # /cmd_vel_safe + /scan -> /api/sport/request (Unitree API 7105)
+    control_rate: 20.0
+    command_timeout: 0.30
+    scan_timeout: 0.50
+
+    # Initial G1 navigation allows forward and yaw motion only.
+    # Conservative public defaults for a first controlled pilot. Increase only
+    # after measuring stopping distance with a physical emergency stop ready.
+    max_forward_speed: 0.10
+    max_angular_speed: 0.20
+
+    # API 7105 command validity. It expires quickly if this node/network dies.
+    command_duration: 0.30
