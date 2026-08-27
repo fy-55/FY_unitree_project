@@ -38,7 +38,7 @@ flowchart LR
 ## 仓库结构
 
 ```text
-unitree-navigation-portfolio/
+my_unitree_project/
 ├── g1_navigation/       # 独立 G1 ROS 2 workspace
 ├── b2_navigation/       # 独立 B2 ROS 2 workspace
 ├── docs/                # 单仓库开发与同步说明
@@ -48,8 +48,8 @@ unitree-navigation-portfolio/
 ## 获取代码
 
 ```bash
-git clone --recurse-submodules <repository-url>
-cd unitree-navigation-portfolio
+git clone --recurse-submodules https://github.com/fy-55/my_unitree_project.git
+cd my_unitree_project
 ```
 
 B2 的 Unitree ROS 2 依赖是 submodule。如果克隆时未递归获取：
