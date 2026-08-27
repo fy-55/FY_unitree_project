@@ -11,15 +11,9 @@
 - 依赖、编译、测试和真机复现步骤
 - 源码归属、密钥和第三方组件发布边界
 
-## 原始语音项目内容
+## 语音项目内容
 
-正式源码的原始来源位于本机工作区：
-
-```text
-/home/oem/fy_sim/unitree_g1_llm_chat_refactor_backup
-```
-
-关键入口为 `example/g1/audio/g1_audio_client_test.cpp`，核心模块位于 `example/g1/voice_chat/`。本目录保存正式语音主线的源码副本，原始工作区作为来源保留。
+关键入口为 `example/g1/audio/g1_audio_client_test.cpp`，核心模块位于 `example/g1/voice_chat/`。本目录保存正式语音主线的源码副本。
 
 ## 公开内容边界
 

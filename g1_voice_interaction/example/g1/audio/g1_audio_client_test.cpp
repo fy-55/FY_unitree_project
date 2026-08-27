@@ -34,8 +34,7 @@ class CurlGlobalGuard {
 
 int main(int argc, char const *argv[]) {
   if (argc != 2) {
-    std::cerr << "用法：g1_audio_client_test <G1有线网卡名>\n"
-              << "例如：g1_audio_client_test enx00e04c316118" << std::endl;
+    std::cerr << "用法：g1_audio_client_test <G1有线网卡名>" << std::endl;
     return 1;
   }
 

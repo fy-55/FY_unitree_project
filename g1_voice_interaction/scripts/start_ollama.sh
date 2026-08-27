@@ -10,15 +10,22 @@ if [[ -f "${CONFIG_FILE}" ]]; then
   set +a
 fi
 
-OLLAMA_ROOT="${OLLAMA_ROOT:-/home/oem/fy_sim/ollama}"
-export OLLAMA_MODELS="${OLLAMA_MODELS:-/home/oem/fy_sim/ollama_models}"
+OLLAMA_ROOT="${OLLAMA_ROOT:-}"
+if [[ -n "${OLLAMA_ROOT}" ]]; then
+  OLLAMA_BIN="${OLLAMA_ROOT}/bin/ollama"
+else
+  OLLAMA_BIN="$(command -v ollama || true)"
+fi
+if [[ -n "${OLLAMA_MODELS:-}" ]]; then
+  export OLLAMA_MODELS
+fi
 export OLLAMA_HOST="127.0.0.1:11434"
 export OLLAMA_CONTEXT_LENGTH="2048"
 export OLLAMA_FLASH_ATTENTION="1"
 export OLLAMA_KEEP_ALIVE="30m"
 
-if [[ ! -x "${OLLAMA_ROOT}/bin/ollama" ]]; then
-  echo "错误：没有找到 ${OLLAMA_ROOT}/bin/ollama"
+if [[ -z "${OLLAMA_BIN}" || ! -x "${OLLAMA_BIN}" ]]; then
+  echo "错误：没有找到 Ollama。请安装 Ollama，或设置 OLLAMA_ROOT。"
   exit 1
 fi
 
@@ -28,4 +35,4 @@ if curl -fsS "http://${OLLAMA_HOST}/api/version" >/dev/null 2>&1; then
 fi
 
 echo "正在启动 Ollama。请保持这个终端窗口开启。"
-exec "${OLLAMA_ROOT}/bin/ollama" serve
+exec "${OLLAMA_BIN}" serve

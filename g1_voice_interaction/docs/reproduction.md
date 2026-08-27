@@ -2,7 +2,7 @@
 
 ## 0. 复现边界
 
-本目录包含正式语音 C++ 源码副本和构建脚本，但不包含 Unitree SDK、模型文件、构建目录或真实配置。原始语音工作区仍保留为未修改的上游来源。首次复现可在本项目目录执行：
+本目录包含正式语音 C++ 源码副本和构建脚本，但不包含 Unitree SDK、模型文件、构建目录或真实配置。首次复现可在本项目目录执行：
 
 ```bash
 cd g1_voice_interaction
@@ -57,12 +57,6 @@ ip -br link
 
 ```bash
 ./scripts/run_g1_voice.sh <G1有线网卡名>
-```
-
-例如：
-
-```bash
-./scripts/run_g1_voice.sh enx00e04c316118
 ```
 
 第一次对话可能触发模型加载。纯文字接口可先用 `./scripts/test_local_llm.sh` 检查模型服务。

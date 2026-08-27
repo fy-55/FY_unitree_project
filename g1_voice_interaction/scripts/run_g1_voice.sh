@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 BINARY="${PROJECT_ROOT}/build/bin/g1_audio_client_test"
-NETWORK_INTERFACE="${1:-enx00e04c316118}"
+NETWORK_INTERFACE="${1:-}"
 CONFIG_FILE="${G1_VOICE_LOCAL_CONFIG:-${SCRIPT_DIR}/g1_voice_local.env}"
 
 if [[ -f "${CONFIG_FILE}" ]]; then
@@ -27,6 +27,11 @@ export G1_WALK_DURATION_MS="${G1_WALK_DURATION_MS:-1500}"
 if [[ ! -x "${BINARY}" ]]; then
   echo "错误：没有找到已编译程序 ${BINARY}"
   echo "请先编译目标g1_audio_client_test。"
+  exit 1
+fi
+
+if [[ -z "${NETWORK_INTERFACE}" ]]; then
+  echo "用法：$0 <G1有线网卡名>"
   exit 1
 fi
 
