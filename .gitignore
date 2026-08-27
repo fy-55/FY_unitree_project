@@ -2,6 +2,7 @@
 /build/
 /install/
 /log/
+/logs/
 
 __pycache__/
 *.py[cod]
@@ -12,3 +13,7 @@ __pycache__/
 *~
 *.bak
 .DS_Store
+*.pcd
+*.bag
+*.db3
+*.mcap
