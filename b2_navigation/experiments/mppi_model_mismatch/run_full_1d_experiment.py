@@ -42,7 +42,10 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    plt = None
 import numpy as np
 import yaml
 
@@ -1673,6 +1676,8 @@ def main() -> None:
     run_self_tests(controller, smoother)
     if args.self_test_only:
         return
+    if plt is None:
+        parser.error("matplotlib is required unless --self-test-only is used")
 
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
