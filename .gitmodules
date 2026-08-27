@@ -1,0 +1,4 @@
+[submodule "b2_navigation/src/unitree_ros2"]
+	path = b2_navigation/src/unitree_ros2
+	url = https://github.com/unitreerobotics/unitree_ros2.git
+	ignore = untracked
